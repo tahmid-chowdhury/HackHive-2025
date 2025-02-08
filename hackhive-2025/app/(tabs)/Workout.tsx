@@ -7,7 +7,7 @@ export default function WorkoutScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <IconSymbol size={80} color="#fff" name="dumbbell" />
+        <IconSymbol size={80} color="#EDF2F4" name="dumbbell" />
         <ThemedText type="title" style={styles.title}>
           Your Fitness Hub
         </ThemedText>
@@ -46,7 +46,7 @@ export default function WorkoutScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#121212",
+    backgroundColor: "#2B2D42",
     padding: 20,
   },
   header: {
@@ -56,17 +56,17 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: "bold",
-    color: "#fff",
+    color: "#EDF2F4",
     marginTop: 10,
   },
   description: {
     fontSize: 18,
     textAlign: "center",
-    color: "#bbb",
+    color: "#8D99AE",
     marginBottom: 20,
   },
   button: {
-    backgroundColor: "#ff6347",
+    backgroundColor: "#EF233C",
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 18,
-    color: "#fff",
+    color: "#EDF2F4",
     fontWeight: "bold",
   },
   section: {
@@ -83,11 +83,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 22,
     fontWeight: "bold",
-    color: "#fff",
+    color: "#EDF2F4",
     marginBottom: 10,
   },
   card: {
-    backgroundColor: "#222",
+    backgroundColor: "#8D99AE",
     padding: 15,
     borderRadius: 10,
     marginBottom: 10,
@@ -95,10 +95,10 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#ff6347",
+    color: "#D90429",
   },
   cardText: {
     fontSize: 16,
-    color: "#bbb",
+    color: "#EDF2F4",
   },
 });
