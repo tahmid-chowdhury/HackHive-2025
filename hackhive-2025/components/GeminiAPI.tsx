@@ -32,55 +32,64 @@ export default function GeminiAPI() {
   );
 }
 
-// Add and export this helper function:
-export async function fetchMealSuggestions(progressData: {
-    calorieProgress: number;
-    proteinConsumed: number;
-    proteinGoal: number;
-    carbsConsumed: number;
-    carbsGoal: number;
-    fatsConsumed: number;
-    fatsGoal: number;
-  }) {
-    console.log("GEMINI API Key:", apiKey);
+// Remove or replace the original fetchMealSuggestions function
 
-    try {
-      const { GoogleGenerativeAI } = require("@google/generative-ai");
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-      const prompt = `Based on the following data:
-  Total calorie progress: ${progressData.calorieProgress.toFixed(1)}%;
-  Protein: ${progressData.proteinConsumed}g/${progressData.proteinGoal}g;
-  Carbohydrates: ${progressData.carbsConsumed}g/${progressData.carbsGoal}g;
-  Fats: ${progressData.fatsConsumed}g/${progressData.fatsGoal}g;
-  Please suggest two meal options and one snack option with calorie counts.
-  Return a JSON object in this format:
-  {"meals": [{"name": "Meal1", "calories": 300}, {"name": "Meal2", "calories": 350}], "snack": {"name": "Snack", "calories": 150}}`;
-      const result = await model.generateContent(prompt);
-
-      console.log("API Result:", result);  // Debugging output
-
-      const response = await result.response.text();  // Ensure it's text
-    
-      console.log("API Response:", response);  // Debugging output
-
-      if (!response || typeof response !== "string") {
-        console.error("Invalid API response:", response);
-        return null;
-      }
-
-      const cleanedResponse = response.replace(/```json\n?|```/g, "").trim();
-
-      console.log("Cleaned JSON String:", cleanedResponse);
-    
-      try {
-        return JSON.parse(cleanedResponse);
-      } catch (jsonError) {
-        console.error("JSON Parsing Error:", jsonError, "Response:", cleanedResponse);
-        return null;  
-      }
-    } catch (error) {
-      console.error("fetchMealSuggestions error:", error);
-      return null;
-    }
+export async function fetchMealSuggestion(progressData: {
+  calorieProgress: number;
+  proteinConsumed: number;
+  proteinGoal: number;
+  carbsConsumed: number;
+  carbsGoal: number;
+  fatsConsumed: number;
+  fatsGoal: number;
+}, mealIndex: number) {
+  try {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const prompt = `Based on the following data:
+Total calorie progress: ${progressData.calorieProgress.toFixed(1)}%;
+Protein: ${progressData.proteinConsumed}g/${progressData.proteinGoal}g;
+Carbohydrates: ${progressData.carbsConsumed}g/${progressData.carbsGoal}g;
+Fats: ${progressData.fatsConsumed}g/${progressData.fatsGoal}g;
+Please suggest one meal option at index ${mealIndex} with calorie count.
+Please do not give me any explanations, simply return a JSON in the format:
+{"meal": {"name": "MealName", "calories": 300}}`;
+    const result = await model.generateContent(prompt);
+    const responseText = await result.response.text();
+    const parsed = JSON.parse(responseText.replace(/```json\n?|```/g, "").trim());
+    return parsed?.meal || null;
+  } catch (error) {
+    console.error("fetchMealSuggestion error:", error);
+    return null;
   }
+}
+
+export async function fetchSnackSuggestion(progressData: {
+  calorieProgress: number;
+  proteinConsumed: number;
+  proteinGoal: number;
+  carbsConsumed: number;
+  carbsGoal: number;
+  fatsConsumed: number;
+  fatsGoal: number;
+}) {
+  try {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const prompt = `Based on the following data:
+Total calorie progress: ${progressData.calorieProgress.toFixed(1)}%;
+Protein: ${progressData.proteinConsumed}g/${progressData.proteinGoal}g;
+Carbohydrates: ${progressData.carbsConsumed}g/${progressData.carbsGoal}g;
+Fats: ${progressData.fatsConsumed}g/${progressData.fatsGoal}g;
+Please suggest one snack option with calorie count.
+Please do not give me any explanations, simply return a JSON in the format:
+{"snack": {"name": "SnackName", "calories": 150}}`;
+    const result = await model.generateContent(prompt);
+    const responseText = await result.response.text();
+    const parsed = JSON.parse(responseText.replace(/```json\n?|```/g, "").trim());
+    return parsed?.snack || null;
+  } catch (error) {
+    console.error("fetchSnackSuggestion error:", error);
+    return null;
+  }
+}

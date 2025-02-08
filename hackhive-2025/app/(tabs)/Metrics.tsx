@@ -3,7 +3,7 @@ import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { fetchMealSuggestions } from "@/components/GeminiAPI";
+import { fetchMealSuggestion, fetchSnackSuggestion } from "@/components/GeminiAPI";
 
 // Simple progress bar component
 const ProgressBar = ({ progress, color }: { progress: number; color: string }) => (
@@ -41,7 +41,7 @@ export default function Metrics() {
     snack: { name: "Greek Yogurt", calories: 150 },
   });
 
-  async function refreshSuggestions() {
+  async function refreshSuggestion(type: "meal" | "snack", mealIndex?: number) {
     const progressData = {
       calorieProgress,
       proteinConsumed,
@@ -51,9 +51,25 @@ export default function Metrics() {
       fatsConsumed,
       fatsGoal,
     };
-    const result = await fetchMealSuggestions(progressData);
-    if (result) {
-      setSuggestions(result);
+
+    if (type === "meal" && mealIndex !== undefined) {
+      const result = await fetchMealSuggestion(progressData, mealIndex);
+      if (result) {
+        setSuggestions((prev) => ({
+          ...prev,
+          meals: prev.meals.map((meal, idx) => 
+            idx === mealIndex ? result : meal
+          ),
+        }));
+      }
+    } else if (type === "snack") {
+      const result = await fetchSnackSuggestion(progressData);
+      if (result) {
+        setSuggestions((prev) => ({
+          ...prev,
+          snack: result,
+        }));
+      }
     }
   }
 
@@ -108,7 +124,10 @@ export default function Metrics() {
               <ThemedText style={styles.detailText}>{meal.calories} cal</ThemedText>
             </View>
             <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.actionButton} onPress={refreshSuggestions}>
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={() => refreshSuggestion("meal", idx)}
+              >
                 <ThemedText style={styles.buttonText}>Refresh</ThemedText>
               </TouchableOpacity>
               <TouchableOpacity style={styles.actionButton} onPress={() => { /* add logic */ }}>
@@ -123,7 +142,10 @@ export default function Metrics() {
             <ThemedText style={styles.detailText}>{suggestions.snack.calories} cal</ThemedText>
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.actionButton} onPress={refreshSuggestions}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => refreshSuggestion("snack")}
+            >
               <ThemedText style={styles.buttonText}>Refresh</ThemedText>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionButton} onPress={() => { /* add logic */ }}>
