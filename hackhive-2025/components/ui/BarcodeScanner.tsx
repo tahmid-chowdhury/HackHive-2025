@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Button, StyleSheet, Text, View, Alert } from 'react-native';
+import { View, Text, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 
 const BarcodeScanner: React.FC = () => {
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
+  const [scanning, setScanning] = useState(false); // New state to track scanning status
 
   useEffect(() => {
     if (permission && !permission.granted) {
@@ -24,7 +25,9 @@ const BarcodeScanner: React.FC = () => {
         <Text style={styles.message}>
           We need your permission to show the camera
         </Text>
-        <Button onPress={requestPermission} title="Grant Permission" />
+        <TouchableOpacity style={styles.button} onPress={requestPermission}>
+          <Text style={styles.buttonText}>Grant Permission</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -39,6 +42,8 @@ const BarcodeScanner: React.FC = () => {
     if (scanned) return; // Prevent multiple scans
 
     setScanned(true);
+    setScanning(false); // Stop scanning when a barcode is scanned
+
     Alert.alert(
       'Scanned barcode!',
       `Type: ${type}\nData: ${data}`,
@@ -52,17 +57,42 @@ const BarcodeScanner: React.FC = () => {
     );
   };
 
+  const toggleScanning = () => {
+    if (scanning) {
+      // If currently scanning, stop scanning
+      setScanning(false);
+      setScanned(false); // Reset scanned state
+    } else {
+      // Start scanning
+      setScanning(true);
+      setScanned(false); // Reset scanned state
+    }
+  };
+
   return (
     <View style={styles.container}>
       <CameraView
         style={styles.camera}
-        onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
+        onBarcodeScanned={
+          scanning && !scanned ? handleBarcodeScanned : undefined
+        } // Only scan if scanning is true and not already scanned
       />
-      {scanned && (
-        <View style={styles.buttonContainer}>
-          <Button title="Scan Again" onPress={() => setScanned(false)} />
-        </View>
-      )}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={toggleScanning}
+          disabled={scanning && scanned} // Disable button while scanning and after a scan
+        >
+          <Text style={styles.buttonText}>
+            {scanning
+              ? 'Cancel Scanning'
+              : scanned
+              ? 'Scan Again'
+              : 'Press to Scan'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+      {scanning && <Text style={styles.scanningText}>Scanning...</Text>}
     </View>
   );
 };
@@ -89,6 +119,21 @@ const styles = StyleSheet.create({
     bottom: 50, // Adjust the distance from the bottom as needed
     alignItems: 'center', // Center the button horizontally
   },
+  button: {
+    backgroundColor: '#EF233C', // Set button color
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: 'white', // Text color for the button
+    fontSize: 16,
+  },
+  scanningText: {
+    position: 'absolute',
+    bottom: 100, // Position above the button
+    fontSize: 18,
+    color: '#EF233 C', // Color for the scanning text
+    fontWeight: 'bold',
+  },
 });
-
 export default BarcodeScanner;
