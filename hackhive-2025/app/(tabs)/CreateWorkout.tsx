@@ -74,6 +74,18 @@ export default function Workout() {
 
   return (
     <GestureHandlerRootView style={styles.container}>
+      <View style={styles.progressBarContainer}>
+        <View
+          style={[
+            styles.progressBar,
+            {
+              width: `${
+                ((currentQuestionIndex + 1) / questions.length) * 100
+              }%`,
+            },
+          ]}
+        />
+      </View>
       <PanGestureHandler
         onGestureEvent={(event) => {
           if (event.nativeEvent.translationX < -50) {
@@ -131,6 +143,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
+  },
+  progressBarContainer: {
+    width: "100%",
+    height: 10,
+    backgroundColor: "#ccc",
+    borderRadius: 5,
+    overflow: "hidden",
+    marginBottom: 20,
+  },
+  progressBar: {
+    height: "100%",
+    backgroundColor: "#EF233C",
   },
   questionContainer: {
     width: "100%",
