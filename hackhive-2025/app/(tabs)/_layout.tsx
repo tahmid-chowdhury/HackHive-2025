@@ -8,6 +8,9 @@ import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
+import { FontAwesome5 } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
@@ -37,11 +40,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="Workout"
         options={{
-          title: "Explore",
+          title: "Workout",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="paperplane.fill" color={color} />
+            <MaterialCommunityIcons size={25} name="dumbbell" color={color} />
           ),
         }}
       />
