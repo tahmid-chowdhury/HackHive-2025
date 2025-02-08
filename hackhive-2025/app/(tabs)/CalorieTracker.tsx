@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
 import BarcodeScannerComponent from '@/components/ui/BarcodeScanner';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -8,8 +14,8 @@ const colors = {
   backgroundDark: '#2B2D42',
   primaryLight: '#2B2D42',
   primaryDark: '#EDF2F4',
-  accentLight: '#EF233C',
-  accentDark: '#D90429',
+  accentLight: '#EF233C', // Red color for light theme
+  accentDark: '#D90429', // Darker red for dark theme
 };
 
 const CalorieTrackerScreen = () => {
@@ -65,7 +71,19 @@ const CalorieTrackerScreen = () => {
             value={calories}
             onChangeText={setCalories}
           />
-          <Button title="Add Calories" onPress={addCalories} />
+          <TouchableOpacity
+            style={[
+              styles.button,
+              {
+                backgroundColor: isDark
+                  ? colors.accentDark
+                  : colors.accentLight,
+              },
+            ]}
+            onPress={addCalories}
+          >
+            <Text style={styles.buttonText}>Add Calories</Text>
+          </TouchableOpacity>
           <Text
             style={[
               styles.total,
@@ -76,10 +94,17 @@ const CalorieTrackerScreen = () => {
           </Text>
         </>
       )}
-      <Button
-        title={showScanner ? 'Back to Calorie Tracker' : 'Open Barcode Scanner'}
+      <TouchableOpacity
+        style={[
+          styles.button,
+          { backgroundColor: isDark ? colors.accentDark : colors.accentLight },
+        ]}
         onPress={() => setShowScanner(!showScanner)}
-      />
+      >
+        <Text style={styles.buttonText}>
+          {showScanner ? 'Back to Calorie Tracker' : 'Open Barcode Scanner'}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -90,12 +115,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    // backgroundColor overridden via inline style based on color scheme
   },
   title: {
     fontSize: 24,
     marginBottom: 20,
-    // color overridden via inline style
   },
   input: {
     height: 40,
@@ -103,12 +126,22 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 10,
     paddingHorizontal: 10,
-    // borderColor, backgroundColor, text color overridden via inline style
   },
   total: {
     marginTop: 20,
     fontSize: 18,
-    // color overridden via inline style
+  },
+  button: {
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginVertical: 10,
+    width: '100%', // Make the button full width
+  },
+  buttonText: {
+    color: 'white', // Text color for the button
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
