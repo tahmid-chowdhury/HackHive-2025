@@ -15,6 +15,7 @@ import Home from "@/app/(tabs)/index"; // Ensure correct path
 import Workout from "@/app/(tabs)/Workout"; // Ensure correct path
 import CreateWorkoutScreen from "@/app/(tabs)/CreateWorkout"; // Ensure correct path
 import CalorieTracker from "@/app/(tabs)/CalorieTracker"; // Ensure correct path
+import Metrics from "@/app/(tabs)/Metrics"; // added Metrics tab import
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -82,6 +83,18 @@ export default function TabLayout() {
               name="food-apple-outline"
               color={color}
             />
+          ),
+        }}
+      />
+
+      {/* Metrics Tab */}
+      <Tab.Screen
+        name="Metrics"
+        component={Metrics}
+        options={{
+          title: "Metrics",
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons size={28} name="chart-line" color={color} />
           ),
         }}
       />
