@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import axios from 'axios';
 
 const BarcodeScanner: React.FC = () => {
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
-  const [scanning, setScanning] = useState(false); // New state to track scanning status
+  const [scanning, setScanning] = useState(false);
 
   useEffect(() => {
     if (permission && !permission.granted) {
@@ -14,12 +15,10 @@ const BarcodeScanner: React.FC = () => {
   }, [permission]);
 
   if (!permission) {
-    // Camera permissions are still loading.
     return <View />;
   }
 
   if (!permission.granted) {
-    // Camera permissions are not granted yet.
     return (
       <View style={styles.container}>
         <Text style={styles.message}>
@@ -32,40 +31,53 @@ const BarcodeScanner: React.FC = () => {
     );
   }
 
-  const handleBarcodeScanned = ({
+  const handleBarcodeScanned = async ({
     type,
     data,
   }: {
     type: string;
     data: string;
   }) => {
-    if (scanned) return; // Prevent multiple scans
+    if (scanned) return;
 
     setScanned(true);
-    setScanning(false); // Stop scanning when a barcode is scanned
+    setScanning(false);
 
-    Alert.alert(
-      'Scanned barcode!',
-      `Type: ${type}\nData: ${data}`,
-      [
-        {
-          text: 'OK',
-          onPress: () => setScanned(false), // Reset scanned state
-        },
-      ],
-      { cancelable: false }
-    );
+    try {
+      // Make an API call to get product data
+      const response = await axios.get(
+        `https://world.openfoodfacts.org/api/v0/product/${data}.json`
+      );
+      const product = response.data.product;
+
+      if (product) {
+        const productName = product.product_name || 'Unknown Product';
+        const calories = product.nutriments?.energy_kcal || 'N/A';
+        const message = `Product: ${productName}\nCalories: ${calories} kcal`;
+
+        Alert.alert('Product Information', message, [
+          { text: 'OK', onPress: () => setScanned(false) },
+        ]);
+      } else {
+        Alert.alert('Error', 'Product not found.', [
+          { text: 'OK', onPress: () => setScanned(false) },
+        ]);
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'Failed to fetch product data.', [
+        { text: 'OK', onPress: () => setScanned(false) },
+      ]);
+    }
   };
 
   const toggleScanning = () => {
     if (scanning) {
-      // If currently scanning, stop scanning
       setScanning(false);
-      setScanned(false); // Reset scanned state
+      setScanned(false);
     } else {
-      // Start scanning
       setScanning(true);
-      setScanned(false); // Reset scanned state
+      setScanned(false);
     }
   };
 
@@ -75,13 +87,13 @@ const BarcodeScanner: React.FC = () => {
         style={styles.camera}
         onBarcodeScanned={
           scanning && !scanned ? handleBarcodeScanned : undefined
-        } // Only scan if scanning is true and not already scanned
+        }
       />
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.button}
           onPress={toggleScanning}
-          disabled={scanning && scanned} // Disable button while scanning and after a scan
+          disabled={scanning && scanned}
         >
           <Text style={styles.buttonText}>
             {scanning
@@ -108,32 +120,33 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   camera: {
-    width: '90%', // Set width to 90% of the screen
-    height: 200, // Set a fixed height for the camera view (adjust as needed)
-    borderRadius: 10, // Optional: rounded corners
-    overflow: 'hidden', // Ensure the camera view respects the border radius
-    aspectRatio: 16 / 9, // Maintain a 16:9 aspect ratio (or adjust as needed)
+    width: '90%',
+    height: 200,
+    borderRadius: 10,
+    overflow: 'hidden',
+    aspectRatio: 16 / 9,
   },
   buttonContainer: {
-    position: 'absolute', // Position the button absolutely
-    bottom: 50, // Adjust the distance from the bottom as needed
-    alignItems: 'center', // Center the button horizontally
+    position: 'absolute',
+    bottom: 50,
+    alignItems: 'center',
   },
   button: {
-    backgroundColor: '#EF233C', // Set button color
+    backgroundColor: '#EF233C',
     padding: 10,
     borderRadius: 5,
   },
   buttonText: {
-    color: 'white', // Text color for the button
+    color: 'white',
     fontSize: 16,
   },
   scanningText: {
     position: 'absolute',
-    bottom: 100, // Position above the button
+    bottom: 100,
     fontSize: 18,
-    color: '#EF233 C', // Color for the scanning text
+    color: '#EF233C',
     fontWeight: 'bold',
   },
 });
+
 export default BarcodeScanner;
