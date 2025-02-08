@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 
-import Constants from "expo-constants";
-
 // Import Gemini API client
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 // Use API key from environment variables
-const apiKey = Constants.manifest?.extra?.GEMINI_API_KEY ?? "";
+const apiKey = "AIzaSyBv1fp-WZCt5Jy2Bxr20SyQRrchjTzbWOk";
 
 export default function GeminiAPI() {
   const [responseText, setResponseText] = useState("Loading...");
@@ -44,6 +42,8 @@ export async function fetchMealSuggestions(progressData: {
     fatsConsumed: number;
     fatsGoal: number;
   }) {
+    console.log("GEMINI API Key:", apiKey);
+
     try {
       const { GoogleGenerativeAI } = require("@google/generative-ai");
       const genAI = new GoogleGenerativeAI(apiKey);
