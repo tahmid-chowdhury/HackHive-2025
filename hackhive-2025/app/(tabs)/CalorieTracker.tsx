@@ -4,12 +4,12 @@ import BarcodeScannerComponent from '@/components/ui/BarcodeScanner';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 const colors = {
-  backgroundLight: "#EDF2F4",
-  backgroundDark: "#2B2D42",
-  primaryLight: "#2B2D42",
-  primaryDark: "#EDF2F4",
-  accentLight: "#EF233C",
-  accentDark: "#D90429",
+  backgroundLight: '#EDF2F4',
+  backgroundDark: '#2B2D42',
+  primaryLight: '#2B2D42',
+  primaryDark: '#EDF2F4',
+  accentLight: '#EF233C',
+  accentDark: '#D90429',
 };
 
 const CalorieTrackerScreen = () => {
@@ -28,12 +28,26 @@ const CalorieTrackerScreen = () => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: isDark ? colors.backgroundDark : colors.backgroundLight }]}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: isDark
+            ? colors.backgroundDark
+            : colors.backgroundLight,
+        },
+      ]}
+    >
       {showScanner ? (
         <BarcodeScannerComponent />
       ) : (
         <>
-          <Text style={[styles.title, { color: isDark ? colors.primaryDark : colors.primaryLight }]}>
+          <Text
+            style={[
+              styles.title,
+              { color: isDark ? colors.primaryDark : colors.primaryLight },
+            ]}
+          >
             Calorie Tracker
           </Text>
           <TextInput
@@ -52,7 +66,12 @@ const CalorieTrackerScreen = () => {
             onChangeText={setCalories}
           />
           <Button title="Add Calories" onPress={addCalories} />
-          <Text style={[styles.total, { color: isDark ? colors.primaryDark : colors.primaryLight }]}>
+          <Text
+            style={[
+              styles.total,
+              { color: isDark ? colors.primaryDark : colors.primaryLight },
+            ]}
+          >
             Total Calories: {totalCalories}
           </Text>
         </>
