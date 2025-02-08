@@ -16,22 +16,34 @@ export default function Metrics() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
 
-  // Sample data
-  const totalCaloriesConsumed = 1500;
-  const totalCaloriesGoal = 2000;
-  const calorieProgress = (totalCaloriesConsumed / totalCaloriesGoal) * 100;
+  // Update initial progress state to start at 0
+  const [progress, setProgress] = useState({
+    totalCaloriesConsumed: 0,
+    totalCaloriesGoal: 2000,
+    proteinConsumed: 0,
+    proteinGoal: 100,
+    carbsConsumed: 0,
+    carbsGoal: 250,
+    fatsConsumed: 0,
+    fatsGoal: 70,
+  });
 
-  const proteinConsumed = 60;
-  const proteinGoal = 100;
-  const proteinProgress = (proteinConsumed / proteinGoal) * 100;
+  // Calculate percentages
+  const calorieProgress = (progress.totalCaloriesConsumed / progress.totalCaloriesGoal) * 100;
+  const proteinProgress = (progress.proteinConsumed / progress.proteinGoal) * 100;
+  const carbsProgress = (progress.carbsConsumed / progress.carbsGoal) * 100;
+  const fatsProgress = (progress.fatsConsumed / progress.fatsGoal) * 100;
 
-  const carbsConsumed = 150;
-  const carbsGoal = 250;
-  const carbsProgress = (carbsConsumed / carbsGoal) * 100;
-
-  const fatsConsumed = 40;
-  const fatsGoal = 70;
-  const fatsProgress = (fatsConsumed / fatsGoal) * 100;
+  // Add meal function
+  const addMeal = (item: { calories: number; protein: number; carbs: number; fats: number }) => {
+    setProgress(prev => ({
+      ...prev,
+      totalCaloriesConsumed: prev.totalCaloriesConsumed + item.calories,
+      proteinConsumed: prev.proteinConsumed + item.protein,
+      carbsConsumed: prev.carbsConsumed + item.carbs,
+      fatsConsumed: prev.fatsConsumed + item.fats,
+    }));
+  };
 
   const [suggestions, setSuggestions] = useState({
     meals: [
@@ -43,14 +55,14 @@ export default function Metrics() {
 
   async function refreshSuggestion(type: "meal" | "snack", mealIndex?: number) {
     const progressData = {
-      totalCaloriesConsumed,
-      totalCaloriesGoal,
-      proteinConsumed,
-      proteinGoal,
-      carbsConsumed,
-      carbsGoal,
-      fatsConsumed,
-      fatsGoal,
+      totalCaloriesConsumed: progress.totalCaloriesConsumed,
+      totalCaloriesGoal: progress.totalCaloriesGoal,
+      proteinConsumed: progress.proteinConsumed,
+      proteinGoal: progress.proteinGoal,
+      carbsConsumed: progress.carbsConsumed,
+      carbsGoal: progress.carbsGoal,
+      fatsConsumed: progress.fatsConsumed,
+      fatsGoal: progress.fatsGoal,
     };
 
     if (type === "meal" && mealIndex !== undefined) {
@@ -89,7 +101,7 @@ export default function Metrics() {
         <ThemedText type="subtitle">Total Calorie Progress</ThemedText>
         <ProgressBar progress={calorieProgress} color={"#fff"} />
         <ThemedText style={styles.detailText}>
-          {totalCaloriesConsumed} / {totalCaloriesGoal} cal
+          {progress.totalCaloriesConsumed} / {progress.totalCaloriesGoal} cal
         </ThemedText>
       </View>
 
@@ -99,19 +111,19 @@ export default function Metrics() {
         <ThemedText>Protein</ThemedText>
         <ProgressBar progress={proteinProgress} color={progressColor} />
         <ThemedText style={styles.detailText}>
-          {proteinConsumed}g / {proteinGoal}g
+          {progress.proteinConsumed}g / {progress.proteinGoal}g
         </ThemedText>
 
         <ThemedText>Carbohydrates</ThemedText>
         <ProgressBar progress={carbsProgress} color={progressColor} />
         <ThemedText style={styles.detailText}>
-          {carbsConsumed}g / {carbsGoal}g
+          {progress.carbsConsumed}g / {progress.carbsGoal}g
         </ThemedText>
 
         <ThemedText>Fats</ThemedText>
         <ProgressBar progress={fatsProgress} color={progressColor} />
         <ThemedText style={styles.detailText}>
-          {fatsConsumed}g / {fatsGoal}g
+          {progress.fatsConsumed}g / {progress.fatsGoal}g
         </ThemedText>
       </View>
 
@@ -133,7 +145,10 @@ export default function Metrics() {
               >
                 <ThemedText style={styles.buttonText}>Refresh</ThemedText>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.actionButton} onPress={() => { /* add logic */ }}>
+              <TouchableOpacity 
+                style={styles.actionButton} 
+                onPress={() => addMeal(meal)}
+              >
                 <ThemedText style={styles.buttonText}>Add</ThemedText>
               </TouchableOpacity>
             </View>
@@ -153,7 +168,10 @@ export default function Metrics() {
             >
               <ThemedText style={styles.buttonText}>Refresh</ThemedText>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton} onPress={() => { /* add logic */ }}>
+            <TouchableOpacity 
+              style={styles.actionButton} 
+              onPress={() => addMeal(suggestions.snack)}
+            >
               <ThemedText style={styles.buttonText}>Add</ThemedText>
             </TouchableOpacity>
           </View>
