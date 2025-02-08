@@ -38,37 +38,67 @@ const BarcodeScanner: React.FC = () => {
     type: string;
     data: string;
   }) => {
-    if (scanned) return;
+    if (scanned) return; // Prevent multiple scans
 
     setScanned(true);
-    setScanning(false);
+    setScanning(false); // Stop scanning when a barcode is scanned
 
     try {
-      // Make an API call to get product data
+      // Make an API call to Nutritionix to get product data
+      const apiKey = '4dc0bac9120fe3b0cb52e5e57d2f9dc3'; // Replace with your Nutritionix API key
+      const appId = '321af49c'; // Replace with your Nutritionix App ID
       const response = await axios.get(
-        `https://world.openfoodfacts.org/api/v0/product/${data}.json`
+        `https://trackapi.nutritionix.com/v2/search/item?upc=${data}`,
+        {
+          headers: {
+            'x-app-id': appId,
+            'x-app-key': apiKey,
+          },
+        }
       );
-      const product = response.data.product;
 
-      if (product) {
-        const productName = product.product_name || 'Unknown Product';
-        const calories = product.nutriments?.energy_kcal || 'N/A';
-        const message = `Product: ${productName}\nCalories: ${calories} kcal`;
+      const foodItem = response.data.foods[0]; // Get the first food item
 
+      if (foodItem) {
+        const productName = foodItem.food_name || 'Unknown Product';
+        const calories = foodItem.nf_calories || 'N/A';
+        const protein = foodItem.nf_protein || 'N/A';
+        const carbohydrates = foodItem.nf_total_carbohydrate || 'N/A';
+        const fat = foodItem.nf_total_fat || 'N/A';
+
+        const message = `Product: ${productName}\nCalories: ${calories} kcal\nProtein: ${protein} g\nCarbohydrates: ${carbohydrates} g\nFat: ${fat} g`;
+
+        // Show alert and reset scanned state immediately
         Alert.alert('Product Information', message, [
-          { text: 'OK', onPress: () => setScanned(false) },
+          { text: 'OK', onPress: () => resetScanner() }, // Reset scanned state
         ]);
       } else {
-        Alert.alert('Error', 'Product not found.', [
-          { text: 'OK', onPress: () => setScanned(false) },
-        ]);
+        // If no product found, show a single alert
+        Alert.alert(
+          'Product Not Found',
+          'No product data available for this barcode.',
+          [
+            { text: 'OK', onPress: () => resetScanner() }, // Reset scanned state
+          ]
+        );
       }
     } catch (error) {
-      console.error(error);
-      Alert.alert('Error', 'Failed to fetch product data.', [
-        { text: 'OK', onPress: () => setScanned(false) },
+      // Handle error properly
+      const errorMessage =
+        axios.isAxiosError(error) && error.response
+          ? error.response.data.message || 'Failed to fetch product data.'
+          : 'An unexpected error occurred.';
+
+      console.error('Error fetching product data:', errorMessage);
+      Alert.alert('Error', errorMessage, [
+        { text: 'OK', onPress: () => resetScanner() }, // Reset scanned state
       ]);
     }
+  };
+
+  const resetScanner = () => {
+    setScanned(false); // Reset scanned state
+    setScanning(true); // Restart scanning
   };
 
   const toggleScanning = () => {
