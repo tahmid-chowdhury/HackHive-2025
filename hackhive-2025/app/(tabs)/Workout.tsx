@@ -3,6 +3,7 @@ import { StyleSheet, ScrollView, View, TouchableOpacity } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
+import { useNavigation } from "@react-navigation/native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 const colors = {
@@ -15,45 +16,95 @@ const colors = {
   secondary: "#8D99AE",
 };
 
-export default function WorkoutScreen() {
+export default function Workout() {
+  const navigation = useNavigation();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
+
   return (
     <ScrollView
       style={[
         styles.container,
-        { backgroundColor: isDark ? colors.backgroundDark : colors.backgroundLight },
+        {
+          backgroundColor: isDark
+            ? colors.backgroundDark
+            : colors.backgroundLight,
+        },
       ]}
     >
       <View style={styles.header}>
-        <IconSymbol size={80} color={isDark ? colors.primaryDark : colors.primaryLight} name="dumbbell" />
-        <ThemedText type="title" style={[styles.title, { color: isDark ? colors.primaryDark : colors.primaryLight }]}>
+        <IconSymbol
+          size={80}
+          color={isDark ? colors.primaryDark : colors.primaryLight}
+          name="dumbbell"
+        />
+        <ThemedText
+          type="title"
+          style={[
+            styles.title,
+            { color: isDark ? colors.primaryDark : colors.primaryLight },
+          ]}
+        >
           Your Fitness Hub
         </ThemedText>
       </View>
 
-      <ThemedText style={[styles.description, { color: isDark ? colors.secondary : colors.primaryLight }]}>
+      <ThemedText
+        style={[
+          styles.description,
+          { color: isDark ? colors.secondary : colors.primaryLight },
+        ]}
+      >
         Track and personalize your fitness journey.
       </ThemedText>
 
-      <TouchableOpacity style={[styles.button, { backgroundColor: isDark ? colors.accentDark : colors.accentLight }]} onPress={() => {}}>
+      <TouchableOpacity
+        style={[
+          styles.button,
+          { backgroundColor: isDark ? colors.accentDark : colors.accentLight },
+        ]}
+        onPress={() => navigation.navigate("CreateWorkout")}
+      >
         <ThemedText style={styles.buttonText}>+ Add New Workout</ThemedText>
       </TouchableOpacity>
 
       <View style={styles.section}>
-        <ThemedText style={[styles.sectionTitle, { color: isDark ? colors.primaryDark : colors.primaryLight }]}>
+        <ThemedText
+          style={[
+            styles.sectionTitle,
+            { color: isDark ? colors.primaryDark : colors.primaryLight },
+          ]}
+        >
           Recommended Routines
         </ThemedText>
-        <TouchableOpacity style={[styles.card, { backgroundColor: colors.secondary }]} >
-          <ThemedText style={[styles.cardTitle, { color: colors.accentDark }]}>🔥 HIIT Blast</ThemedText>
-          <ThemedText style={[styles.cardText, { color: isDark ? colors.primaryDark : colors.primaryLight }]}>
+        <TouchableOpacity
+          style={[styles.card, { backgroundColor: colors.secondary }]}
+        >
+          <ThemedText style={[styles.cardTitle, { color: colors.accentDark }]}>
+            🔥 HIIT Blast
+          </ThemedText>
+          <ThemedText
+            style={[
+              styles.cardText,
+              { color: isDark ? colors.primaryDark : colors.primaryLight },
+            ]}
+          >
             Short and intense workouts
           </ThemedText>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.card, { backgroundColor: colors.secondary }]} >
-          <ThemedText style={[styles.cardTitle, { color: colors.accentDark }]}>💪 Strength Training</ThemedText>
-          <ThemedText style={[styles.cardText, { color: isDark ? colors.primaryDark : colors.primaryLight }]}>
+        <TouchableOpacity
+          style={[styles.card, { backgroundColor: colors.secondary }]}
+        >
+          <ThemedText style={[styles.cardTitle, { color: colors.accentDark }]}>
+            💪 Strength Training
+          </ThemedText>
+          <ThemedText
+            style={[
+              styles.cardText,
+              { color: isDark ? colors.primaryDark : colors.primaryLight },
+            ]}
+          >
             Build muscle and endurance
           </ThemedText>
         </TouchableOpacity>
@@ -66,7 +117,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    // backgroundColor overridden via inline style
   },
   header: {
     alignItems: "center",
