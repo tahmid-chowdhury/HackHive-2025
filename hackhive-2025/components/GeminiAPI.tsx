@@ -57,7 +57,28 @@ export async function fetchMealSuggestions(progressData: {
   Return a JSON object in this format:
   {"meals": [{"name": "Meal1", "calories": 300}, {"name": "Meal2", "calories": 350}], "snack": {"name": "Snack", "calories": 150}}`;
       const result = await model.generateContent(prompt);
-      return JSON.parse(result.response.text());
+
+      console.log("API Result:", result);  // Debugging output
+
+      const response = await result.response.text();  // Ensure it's text
+    
+      console.log("API Response:", response);  // Debugging output
+
+      if (!response || typeof response !== "string") {
+        console.error("Invalid API response:", response);
+        return null;
+      }
+
+      const cleanedResponse = response.replace(/```json\n?|```/g, "").trim();
+
+      console.log("Cleaned JSON String:", cleanedResponse);
+    
+      try {
+        return JSON.parse(cleanedResponse);
+      } catch (jsonError) {
+        console.error("JSON Parsing Error:", jsonError, "Response:", cleanedResponse);
+        return null;  
+      }
     } catch (error) {
       console.error("fetchMealSuggestions error:", error);
       return null;
