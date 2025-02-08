@@ -8,7 +8,6 @@ import {
   Text,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import { useNavigation } from "@react-navigation/native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import {
@@ -41,13 +40,7 @@ const questions = [
   "What is your preferred workout duration (Minutes)?",
 ];
 
-const numericQuestions = new Set([
-  "What is your age?",
-  "What is your height (cm)?",
-  "What is your weight (kg)?",
-  "How many days per week do you want to work out?",
-  "What is your preferred workout duration (Minutes)?",
-]);
+const numericQuestions = new Set(questions);
 
 export default function Workout() {
   const navigation = useNavigation();
@@ -82,6 +75,13 @@ export default function Workout() {
     }
   };
 
+  const handleBack = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+      setErrorMessage("");
+    }
+  };
+
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: translateX.value }],
@@ -102,6 +102,7 @@ export default function Workout() {
           ]}
         />
       </View>
+
       <PanGestureHandler
         onGestureEvent={(event) => {
           if (event.nativeEvent.translationX < -50) {
@@ -113,17 +114,15 @@ export default function Workout() {
         }}
       >
         <Animated.View style={[styles.questionContainer, animatedStyle]}>
-          <ThemedView style={styles.header}>
-            <ThemedText
-              type="title"
-              style={[
-                styles.title,
-                { color: isDark ? colors.primaryDark : colors.primaryLight },
-              ]}
-            >
-              Create Your Workout Plan
-            </ThemedText>
-          </ThemedView>
+          <ThemedText
+            type="title"
+            style={[
+              styles.title,
+              { color: isDark ? colors.primaryDark : colors.primaryLight },
+            ]}
+          >
+            Create Your Workout Plan
+          </ThemedText>
 
           <ThemedText style={styles.questionText}>
             {questions[currentQuestionIndex]}
@@ -146,9 +145,16 @@ export default function Workout() {
             <Text style={styles.errorText}>{errorMessage}</Text>
           ) : null}
 
-          <TouchableOpacity style={styles.button} onPress={handleNext}>
-            <ThemedText style={styles.buttonText}>Next</ThemedText>
-          </TouchableOpacity>
+          <View style={styles.buttonContainer}>
+            {currentQuestionIndex > 0 && (
+              <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+                <ThemedText style={styles.buttonText}>Back</ThemedText>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity style={styles.button} onPress={handleNext}>
+              <ThemedText style={styles.buttonText}>Next</ThemedText>
+            </TouchableOpacity>
+          </View>
 
           <TouchableOpacity
             style={styles.cancelButton}
@@ -185,14 +191,11 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
   },
-  header: {
-    alignItems: "center",
-    marginBottom: 20,
-  },
   title: {
     fontSize: 30,
     fontWeight: "bold",
     textAlign: "center",
+    marginBottom: 20,
   },
   questionText: {
     fontSize: 18,
@@ -216,12 +219,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 10,
   },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "80%",
+  },
   button: {
     backgroundColor: "#EF233C",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    marginTop: 10,
+  },
+  backButton: {
+    backgroundColor: "#8D99AE",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
   },
   buttonText: {
     color: "#FFF",
@@ -229,14 +242,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   cancelButton: {
-    backgroundColor: "#8D99AE",
-    padding: 12,
-    borderRadius: 10,
+    marginTop: 20,
     alignItems: "center",
-    marginTop: 10,
   },
   cancelButtonText: {
-    color: "#EDF2F4",
+    color: "#8D99AE",
     fontSize: 16,
     fontWeight: "bold",
   },
