@@ -43,7 +43,8 @@ export default function Metrics() {
 
   async function refreshSuggestion(type: "meal" | "snack", mealIndex?: number) {
     const progressData = {
-      calorieProgress,
+      totalCaloriesConsumed,
+      totalCaloriesGoal,
       proteinConsumed,
       proteinGoal,
       carbsConsumed,

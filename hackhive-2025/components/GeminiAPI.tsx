@@ -35,7 +35,8 @@ export default function GeminiAPI() {
 // Remove or replace the original fetchMealSuggestions function
 
 export async function fetchMealSuggestion(progressData: {
-  calorieProgress: number;
+  totalCaloriesConsumed: number;
+  totalCaloriesGoal: number;
   proteinConsumed: number;
   proteinGoal: number;
   carbsConsumed: number;
@@ -47,7 +48,7 @@ export async function fetchMealSuggestion(progressData: {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     const prompt = `Based on the following data:
-Total calorie progress: ${progressData.calorieProgress.toFixed(1)}%;
+Total calorie progress: ${progressData.totalCaloriesConsumed}/${progressData.totalCaloriesGoal};
 Protein: ${progressData.proteinConsumed}g/${progressData.proteinGoal}g;
 Carbohydrates: ${progressData.carbsConsumed}g/${progressData.carbsGoal}g;
 Fats: ${progressData.fatsConsumed}g/${progressData.fatsGoal}g;
@@ -65,7 +66,8 @@ Please do not give me any explanations, simply return a JSON in the format:
 }
 
 export async function fetchSnackSuggestion(progressData: {
-  calorieProgress: number;
+  totalCaloriesConsumed: number;
+  totalCaloriesGoal: number;
   proteinConsumed: number;
   proteinGoal: number;
   carbsConsumed: number;
@@ -77,7 +79,7 @@ export async function fetchSnackSuggestion(progressData: {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     const prompt = `Based on the following data:
-Total calorie progress: ${progressData.calorieProgress.toFixed(1)}%;
+Total calorie progress: ${progressData.totalCaloriesConsumed}/${progressData.totalCaloriesGoal};
 Protein: ${progressData.proteinConsumed}g/${progressData.proteinGoal}g;
 Carbohydrates: ${progressData.carbsConsumed}g/${progressData.carbsGoal}g;
 Fats: ${progressData.fatsConsumed}g/${progressData.fatsGoal}g;
