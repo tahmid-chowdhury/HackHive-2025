@@ -35,10 +35,10 @@ export default function Metrics() {
 
   const [suggestions, setSuggestions] = useState({
     meals: [
-      { name: "Grilled Chicken Salad", calories: 350 },
-      { name: "Veggie Wrap", calories: 300 },
+      { name: "Grilled Chicken Salad", calories: 350, protein: 35, carbs: 15, fats: 12 },
+      { name: "Veggie Wrap", calories: 300, protein: 12, carbs: 45, fats: 8 },
     ],
-    snack: { name: "Greek Yogurt", calories: 150 },
+    snack: { name: "Greek Yogurt", calories: 150, protein: 15, carbs: 8, fats: 5 },
   });
 
   async function refreshSuggestion(type: "meal" | "snack", mealIndex?: number) {
@@ -122,7 +122,9 @@ export default function Metrics() {
           <View key={idx} style={styles.mealOption}>
             <View style={styles.mealInfo}>
               <ThemedText>{meal.name}</ThemedText>
-              <ThemedText style={styles.detailText}>{meal.calories} cal</ThemedText>
+              <ThemedText style={styles.detailText}>
+                {meal.calories} cal | P: {meal.protein}g | C: {meal.carbs}g | F: {meal.fats}g
+              </ThemedText>
             </View>
             <View style={styles.buttonContainer}>
               <TouchableOpacity
@@ -140,7 +142,9 @@ export default function Metrics() {
         <View style={styles.mealOption}>
           <View style={styles.mealInfo}>
             <ThemedText>Snack: {suggestions.snack.name}</ThemedText>
-            <ThemedText style={styles.detailText}>{suggestions.snack.calories} cal</ThemedText>
+            <ThemedText style={styles.detailText}>
+              {suggestions.snack.calories} cal | P: {suggestions.snack.protein}g | C: {suggestions.snack.carbs}g | F: {suggestions.snack.fats}g
+            </ThemedText>
           </View>
           <View style={styles.buttonContainer}>
             <TouchableOpacity
