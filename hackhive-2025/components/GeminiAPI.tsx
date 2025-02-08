@@ -52,7 +52,7 @@ Total calorie progress: ${progressData.totalCaloriesConsumed}/${progressData.tot
 Protein: ${progressData.proteinConsumed}g/${progressData.proteinGoal}g;
 Carbohydrates: ${progressData.carbsConsumed}g/${progressData.carbsGoal}g;
 Fats: ${progressData.fatsConsumed}g/${progressData.fatsGoal}g;
-Please suggest one meal option at index ${mealIndex} with calories and macro nutrients.
+Please suggest one meal option with calories and macro nutrients.
 Please do not give me any explanations, simply return a JSON in the format:
 {"meal": {"name": "MealName", "calories": 000, "protein": 00, "carbs": 00, "fats": 00}}`;
     const result = await model.generateContent(prompt);
