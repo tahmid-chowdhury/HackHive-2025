@@ -1,16 +1,26 @@
 import React, { useState } from "react";
 import {
   StyleSheet,
-  ScrollView,
   View,
-  TouchableOpacity,
   TextInput,
+  TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { IconSymbol } from "@/components/ui/IconSymbol";
 import { useNavigation } from "@react-navigation/native";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import {
+  GestureHandlerRootView,
+  PanGestureHandler,
+} from "react-native-gesture-handler";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from "react-native-reanimated";
+
+const { width } = Dimensions.get("window");
 
 const colors = {
   backgroundLight: "#EDF2F4",
@@ -22,153 +32,109 @@ const colors = {
   secondary: "#8D99AE",
 };
 
+const questions = [
+  "What is your age?",
+  "What is your gender?",
+  "What is your height (cm)?",
+  "What is your weight (kg)?",
+  "What is your primary fitness goal? (Muscle Gain, Fat Loss, etc.)",
+  "What is your experience level? (Beginner, Intermediate, Advanced)",
+  "How many days per week do you want to work out?",
+  "What intensity do you prefer? (Low, Moderate, High)",
+  "What is your preferred workout duration (Minutes)?",
+];
+
 export default function Workout() {
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
-  const [age, setAge] = useState("");
-  const [gender, setGender] = useState("");
-  const [height, setHeight] = useState("");
-  const [weight, setWeight] = useState("");
-  const [fitnessGoal, setFitnessGoal] = useState("");
-  const [experience, setExperience] = useState("");
-  const [workoutDays, setWorkoutDays] = useState("");
-  const [workoutIntensity, setWorkoutIntensity] = useState("");
-  const [workoutDuration, setWorkoutDuration] = useState("");
+  const [responses, setResponses] = useState({});
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [input, setInput] = useState("");
+  const translateX = useSharedValue(0);
+
+  const handleNext = () => {
+    if (input.trim() !== "") {
+      setResponses({ ...responses, [questions[currentQuestionIndex]]: input });
+      setInput("");
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+      } else {
+        console.log("Final Responses: ", responses);
+        navigation.goBack();
+      }
+    }
+  };
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: translateX.value }],
+    };
+  });
 
   return (
-    <ScrollView
-      style={[
-        styles.container,
-        {
-          backgroundColor: isDark
-            ? colors.backgroundDark
-            : colors.backgroundLight,
-        },
-      ]}
-    >
-      <View style={styles.header}>
-        <IconSymbol
-          size={80}
-          color={isDark ? colors.primaryDark : colors.primaryLight}
-          name="dumbbell"
-        />
-        <ThemedText
-          type="title"
-          style={[
-            styles.title,
-            { color: isDark ? colors.primaryDark : colors.primaryLight },
-          ]}
-        >
-          Create Your Workout Plan
-        </ThemedText>
-      </View>
-
-      <ThemedText
-        style={[
-          styles.description,
-          { color: isDark ? colors.secondary : colors.primaryLight },
-        ]}
+    <GestureHandlerRootView style={styles.container}>
+      <PanGestureHandler
+        onGestureEvent={(event) => {
+          if (event.nativeEvent.translationX < -50) {
+            handleNext();
+            translateX.value = withSpring(-width, {}, () => {
+              translateX.value = 0;
+            });
+          }
+        }}
       >
-        Answer some simple questions for us.
-      </ThemedText>
+        <Animated.View style={[styles.questionContainer, animatedStyle]}>
+          <ThemedView style={styles.header}>
+            <ThemedText
+              type="title"
+              style={[
+                styles.title,
+                { color: isDark ? colors.primaryDark : colors.primaryLight },
+              ]}
+            >
+              Create Your Workout Plan
+            </ThemedText>
+          </ThemedView>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Age"
-        value={age}
-        onChangeText={setAge}
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Gender"
-        value={gender}
-        onChangeText={setGender}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Height (cm)"
-        value={height}
-        onChangeText={setHeight}
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Weight (kg)"
-        value={weight}
-        onChangeText={setWeight}
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Fitness Goal (e.g. Muscle Gain, Fat Loss)"
-        value={fitnessGoal}
-        onChangeText={setFitnessGoal}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Experience Level (Beginner, Intermediate, Advanced)"
-        value={experience}
-        onChangeText={setExperience}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Workout Days per Week"
-        value={workoutDays}
-        onChangeText={setWorkoutDays}
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Workout Intensity (Low, Moderate, High)"
-        value={workoutIntensity}
-        onChangeText={setWorkoutIntensity}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Preferred Workout Duration (Minutes)"
-        value={workoutDuration}
-        onChangeText={setWorkoutDuration}
-        keyboardType="numeric"
-      />
+          <ThemedText style={styles.questionText}>
+            {questions[currentQuestionIndex]}
+          </ThemedText>
 
-      <TouchableOpacity
-        style={[
-          styles.button,
-          { backgroundColor: isDark ? colors.accentDark : colors.accentLight },
-        ]}
-        onPress={() =>
-          console.log({
-            age,
-            gender,
-            height,
-            weight,
-            fitnessGoal,
-            experience,
-            workoutDays,
-            workoutIntensity,
-            workoutDuration,
-          })
-        }
-      >
-        <ThemedText style={styles.buttonText}>Generate Workout Plan</ThemedText>
-      </TouchableOpacity>
+          <TextInput
+            style={styles.input}
+            placeholder="Type your answer here..."
+            value={input}
+            onChangeText={setInput}
+            placeholderTextColor="#8D99AE"
+          />
 
-      <TouchableOpacity
-        style={styles.cancelButton}
-        onPress={() => navigation.goBack()}
-      >
-        <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
-      </TouchableOpacity>
-    </ScrollView>
+          <TouchableOpacity style={styles.button} onPress={handleNext}>
+            <ThemedText style={styles.buttonText}>Next</ThemedText>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => navigation.goBack()}
+          >
+            <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
+          </TouchableOpacity>
+        </Animated.View>
+      </PanGestureHandler>
+    </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
+  },
+  questionContainer: {
+    width: "100%",
+    alignItems: "center",
   },
   header: {
     alignItems: "center",
@@ -177,27 +143,35 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: "bold",
-    marginTop: 10,
     textAlign: "center",
+  },
+  questionText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 20,
   },
   input: {
     backgroundColor: "#FFF",
     padding: 12,
     borderRadius: 10,
-    marginBottom: 15,
     borderWidth: 1,
     borderColor: "#8D99AE",
     color: "#2B2D42",
+    width: "80%",
+    textAlign: "center",
+    marginBottom: 15,
   },
   button: {
-    paddingVertical: 12,
+    backgroundColor: "#EF233C",
+    padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    marginBottom: 20,
+    marginTop: 10,
   },
   buttonText: {
+    color: "#FFF",
     fontSize: 18,
-    color: "#EDF2F4",
     fontWeight: "bold",
   },
   cancelButton: {
