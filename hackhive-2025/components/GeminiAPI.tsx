@@ -53,7 +53,7 @@ Carbohydrates: ${progressData.carbsConsumed}g/${progressData.carbsGoal}g;
 Fats: ${progressData.fatsConsumed}g/${progressData.fatsGoal}g;
 Please suggest one meal option at index ${mealIndex} with calorie count.
 Please do not give me any explanations, simply return a JSON in the format:
-{"meal": {"name": "MealName", "calories": 300}}`;
+{"meal": {"name": "MealName", "calories": 000}}`;
     const result = await model.generateContent(prompt);
     const responseText = await result.response.text();
     const parsed = JSON.parse(responseText.replace(/```json\n?|```/g, "").trim());
@@ -83,7 +83,7 @@ Carbohydrates: ${progressData.carbsConsumed}g/${progressData.carbsGoal}g;
 Fats: ${progressData.fatsConsumed}g/${progressData.fatsGoal}g;
 Please suggest one snack option with calorie count.
 Please do not give me any explanations, simply return a JSON in the format:
-{"snack": {"name": "SnackName", "calories": 150}}`;
+{"snack": {"name": "SnackName", "calories": 000}}`;
     const result = await model.generateContent(prompt);
     const responseText = await result.response.text();
     const parsed = JSON.parse(responseText.replace(/```json\n?|```/g, "").trim());
