@@ -1,7 +1,8 @@
-import { StyleSheet, ScrollView, View, TouchableOpacity } from "react-native";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { IconSymbol } from "@/components/ui/IconSymbol";
+import { StyleSheet, ScrollView, View, TouchableOpacity } from 'react-native';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { IconSymbol } from '@/components/ui/IconSymbol';
+import React from 'react';
 
 export default function WorkoutScreen() {
   return (
@@ -46,59 +47,59 @@ export default function WorkoutScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#2B2D42",
+    backgroundColor: '#2B2D42',
     padding: 20,
   },
   header: {
-    alignItems: "center",
+    alignItems: 'center',
     marginBottom: 20,
   },
   title: {
     fontSize: 30,
-    fontWeight: "bold",
-    color: "#EDF2F4",
+    fontWeight: 'bold',
+    color: '#EDF2F4',
     marginTop: 10,
   },
   description: {
     fontSize: 18,
-    textAlign: "center",
-    color: "#8D99AE",
+    textAlign: 'center',
+    color: '#8D99AE',
     marginBottom: 20,
   },
   button: {
-    backgroundColor: "#EF233C",
+    backgroundColor: '#EF233C',
     paddingVertical: 12,
     borderRadius: 10,
-    alignItems: "center",
+    alignItems: 'center',
     marginBottom: 20,
   },
   buttonText: {
     fontSize: 18,
-    color: "#EDF2F4",
-    fontWeight: "bold",
+    color: '#EDF2F4',
+    fontWeight: 'bold',
   },
   section: {
     marginTop: 20,
   },
   sectionTitle: {
     fontSize: 22,
-    fontWeight: "bold",
-    color: "#EDF2F4",
+    fontWeight: 'bold',
+    color: '#EDF2F4',
     marginBottom: 10,
   },
   card: {
-    backgroundColor: "#8D99AE",
+    backgroundColor: '#8D99AE',
     padding: 15,
     borderRadius: 10,
     marginBottom: 10,
   },
   cardTitle: {
     fontSize: 20,
-    fontWeight: "bold",
-    color: "#D90429",
+    fontWeight: 'bold',
+    color: '#D90429',
   },
   cardText: {
     fontSize: 16,
-    color: "#EDF2F4",
+    color: '#EDF2F4',
   },
 });
