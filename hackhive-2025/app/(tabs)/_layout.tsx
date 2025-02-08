@@ -8,7 +8,6 @@ import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-import { FontAwesome5 } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function TabLayout() {
@@ -44,7 +43,7 @@ export default function TabLayout() {
         options={{
           title: 'Workout',
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons size={25} name="dumbbell" color={color} />
+            <MaterialCommunityIcons size={28} name="dumbbell" color={color} />
           ),
         }}
       />
@@ -53,11 +52,7 @@ export default function TabLayout() {
         options={{
           title: 'Calorie Tracker',
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons
-              size={25}
-              name="food-apple-outline"
-              color={color}
-            />
+            <MaterialCommunityIcons size={28} name="food-apple-outline" color={color} />
           ),
         }}
       />
