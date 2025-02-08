@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   Dimensions,
+  Text,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -34,15 +35,19 @@ const colors = {
 
 const questions = [
   "What is your age?",
-  "What is your gender?",
   "What is your height (cm)?",
   "What is your weight (kg)?",
-  "What is your primary fitness goal? (Muscle Gain, Fat Loss, etc.)",
-  "What is your experience level? (Beginner, Intermediate, Advanced)",
   "How many days per week do you want to work out?",
-  "What intensity do you prefer? (Low, Moderate, High)",
   "What is your preferred workout duration (Minutes)?",
 ];
+
+const numericQuestions = new Set([
+  "What is your age?",
+  "What is your height (cm)?",
+  "What is your weight (kg)?",
+  "How many days per week do you want to work out?",
+  "What is your preferred workout duration (Minutes)?",
+]);
 
 export default function Workout() {
   const navigation = useNavigation();
@@ -51,18 +56,29 @@ export default function Workout() {
   const [responses, setResponses] = useState({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [input, setInput] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const translateX = useSharedValue(0);
 
   const handleNext = () => {
-    if (input.trim() !== "") {
-      setResponses({ ...responses, [questions[currentQuestionIndex]]: input });
-      setInput("");
-      if (currentQuestionIndex < questions.length - 1) {
-        setCurrentQuestionIndex(currentQuestionIndex + 1);
-      } else {
-        console.log("Final Responses: ", responses);
-        navigation.goBack();
-      }
+    if (input.trim() === "") {
+      setErrorMessage("Please enter a value");
+      return;
+    }
+
+    if (numericQuestions.has(questions[currentQuestionIndex]) && isNaN(input)) {
+      setErrorMessage("Please enter a valid numeric value");
+      return;
+    }
+
+    setResponses({ ...responses, [questions[currentQuestionIndex]]: input });
+    setInput("");
+    setErrorMessage("");
+
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else {
+      console.log("Final Responses: ", responses);
+      navigation.goBack();
     }
   };
 
@@ -118,8 +134,17 @@ export default function Workout() {
             placeholder="Type your answer here..."
             value={input}
             onChangeText={setInput}
+            keyboardType={
+              numericQuestions.has(questions[currentQuestionIndex])
+                ? "numeric"
+                : "default"
+            }
             placeholderTextColor="#8D99AE"
           />
+
+          {errorMessage ? (
+            <Text style={styles.errorText}>{errorMessage}</Text>
+          ) : null}
 
           <TouchableOpacity style={styles.button} onPress={handleNext}>
             <ThemedText style={styles.buttonText}>Next</ThemedText>
@@ -185,6 +210,11 @@ const styles = StyleSheet.create({
     width: "80%",
     textAlign: "center",
     marginBottom: 15,
+  },
+  errorText: {
+    color: "red",
+    fontSize: 14,
+    marginBottom: 10,
   },
   button: {
     backgroundColor: "#EF233C",
