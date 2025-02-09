@@ -55,9 +55,8 @@ export default function HomeScreen() {
       {/* User's Current Stats */}
       <View style={[styles.metricSection, { backgroundColor: isDark ? colors.accentDark : colors.accentLight }]}>
         <ThemedText type="subtitle" style={{ color: "#ffffff" }}>Today's Stats</ThemedText>
-        <ThemedText style={{ color: "#ffffff" }}>Calorie Goal: 2000 kcal</ThemedText>
+        <ThemedText style={{ color: "#ffffff" }}>Calorie Goal: 2000 cal</ThemedText>
         <ThemedText style={{ color: "#ffffff" }}>Exercise Routine: 30-min HIIT</ThemedText>
-        <ThemedText style={{ color: "#ffffff" }}>Step Goal: 10000 steps</ThemedText>
       </View>
 
       {/* Weekly Summary */}
@@ -65,7 +64,6 @@ export default function HomeScreen() {
         <ThemedText type="subtitle">This Week</ThemedText>
         <ThemedText>Workouts: 3/5</ThemedText>
         <ThemedText>Calories: On Track</ThemedText>
-        <ThemedText>Steps: 45,230</ThemedText>
       </View>
 
       {/* Recommendations */}
