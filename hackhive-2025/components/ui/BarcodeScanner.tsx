@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import { useNutrition } from '@/app/context/NutritionContext';
 import axios from 'axios';
-
-interface BarcodeScannerProps {
-  onProductScanned: (product: Product) => void;
-}
 
 interface Product {
   name: string;
@@ -15,12 +12,12 @@ interface Product {
   fat: number;
 }
 
-const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
-  onProductScanned,
-}) => {
+const BarcodeScanner: React.FC = () => {
   const [permission, requestPermission] = useCameraPermissions();
   const [scanning, setScanning] = useState(false);
+  const [scannedProduct, setScannedProduct] = useState<Product | null>(null); // State to hold scanned product
   const scannedRef = useRef(false);
+  const { addNutrition } = useNutrition();
 
   useEffect(() => {
     if (permission && !permission.granted) {
@@ -80,7 +77,16 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
           fat: foodItem.nf_total_fat || 0,
         };
 
-        onProductScanned(product);
+        // Add nutrition to the context
+        addNutrition({
+          totalCalories: product.calories,
+          protein: product.protein,
+          carbs: product.carbohydrates,
+          fats: product.fat,
+        });
+
+        // Update local state to display scanned product info
+        setScannedProduct(product);
 
         Alert.alert('Product Scanned', `${product.name} added!`, [
           {
@@ -128,6 +134,17 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
           </Text>
         </TouchableOpacity>
       </View>
+
+      {/* Display Scanned Product Info */}
+      {scannedProduct && (
+        <View style={styles.productInfoContainer}>
+          <Text style={styles.productTitle}>{scannedProduct.name}</Text>
+          <Text>Calories: {scannedProduct.calories}</Text>
+          <Text>Protein: {scannedProduct.protein}g</Text>
+          <Text>Carbs: {scannedProduct.carbohydrates}g</Text>
+          <Text>Fats: {scannedProduct.fat}g</Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -144,14 +161,13 @@ const styles = StyleSheet.create({
   },
   camera: {
     width: '90%',
-    height: '70%',
+    height: '60%',
     borderRadius: 10,
     overflow: 'hidden',
     aspectRatio: 16 / 9,
   },
   buttonContainer: {
-    position: 'absolute',
-    bottom: 50,
+    marginTop: 10,
     alignItems: 'center',
   },
   button: {
@@ -162,6 +178,23 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontSize: 16,
+  },
+  productInfoContainer: {
+    marginTop: 20,
+    backgroundColor: '#f0f0f0',
+    padding: 15,
+    borderRadius: 10,
+    width: '90%',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+  },
+  productTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
 });
 
