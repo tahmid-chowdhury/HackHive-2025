@@ -4,11 +4,14 @@ import Workout from "./Workout";
 import CreateWorkoutScreen from "./CreateWorkout";
 import WorkoutResults from "./WorkoutResults";
 
+// Define the type for navigation parameters within the Workout stack
 export type WorkoutStackParamList = {
-  WorkoutHome: undefined;
-  CreateWorkout: undefined;
+  WorkoutHome: undefined; // No parameters expected for the Workout Home screen
+  CreateWorkout: undefined; // No parameters expected for the Create Workout screen
+  WorkoutResults: undefined; // No parameters expected for the Workout Results screen
 };
 
+// Create a stack navigator instance using the defined parameter types
 const Stack = createStackNavigator<WorkoutStackParamList>();
 
 export default function WorkoutStack() {

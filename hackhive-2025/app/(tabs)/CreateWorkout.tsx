@@ -23,8 +23,9 @@ import Animated, {
 } from "react-native-reanimated";
 import { fetchWorkoutRoutine } from "@/components/GeminiAPI"; // Import function
 
-const { width } = Dimensions.get("window");
+const { width } = Dimensions.get("window"); //get device screen width
 
+//define colour themes
 const colors = {
   backgroundLight: "#EDF2F4",
   backgroundDark: "#2B2D42",
@@ -35,6 +36,7 @@ const colors = {
   secondary: "#8D99AE",
 };
 
+// List of questions for the workout form
 const questions = [
   "What is your age?",
   "What is your height (cm)?",
@@ -46,22 +48,25 @@ const questions = [
 
 const numericQuestions = new Set(questions.slice(0, 5)); // First 5 questions require numeric input
 
-const fitnessGoals = ["Lean & Toned", "Muscular & Strong", "Bulk & Mass"]; // Options for the last question
+const fitnessGoals = ["Lean & Toned", "Muscular & Strong", "Bulk & Mass"]; // Options for the fitness goals
 
 export default function Workout() {
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
+
+  // State for user responses
   const [responses, setResponses] = useState({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [input, setInput] = useState("");
-  const [selectedGoal, setSelectedGoal] = useState("");
+  const [selectedGoal, setSelectedGoal] = useState(""); // State for Last question
   const [errorMessage, setErrorMessage] = useState("");
   const [workoutRoutine, setWorkoutRoutine] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const translateX = useSharedValue(0);
+  const translateX = useSharedValue(0); // Animation for swipe gesture
 
+  // Handle next button click
   const handleNext = async () => {
     if (currentQuestionIndex === 5 && !selectedGoal) {
       setErrorMessage("Please select a fitness goal.");
@@ -78,6 +83,7 @@ export default function Workout() {
       return;
     }
 
+    // Store response in state
     setResponses((prev) => ({
       ...prev,
       [questions[currentQuestionIndex]]:
@@ -86,6 +92,7 @@ export default function Workout() {
     setInput("");
     setErrorMessage("");
 
+    // If there are more questions, move to next
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
@@ -103,6 +110,7 @@ export default function Workout() {
     }
   };
 
+  // Handle back button click
   const handleBack = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
@@ -110,6 +118,7 @@ export default function Workout() {
     }
   };
 
+  // Animation style for gesture handling
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: translateX.value }],
@@ -117,13 +126,25 @@ export default function Workout() {
   });
 
   return (
+    // Enables scrolling for the entire screen
     <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <GestureHandlerRootView style={[styles.container, { backgroundColor: isDark ? colors.backgroundDark : colors.backgroundLight }]}>
+      <GestureHandlerRootView
+        style={[
+          styles.container,
+          {
+            backgroundColor: isDark
+              ? colors.backgroundDark
+              : colors.backgroundLight,
+          },
+        ]}
+      >
+        {/*If a workout routine exists, this displays the results*/}
         {workoutRoutine ? (
           <ScrollView style={styles.resultsContainer}>
             <ThemedText type="title" style={styles.title}>
               Your Personalized Workout
             </ThemedText>
+            exercises
             {workoutRoutine.routine.map((exercise, index) => (
               <View key={index} style={styles.exerciseContainer}>
                 <Text style={styles.exerciseName}>{exercise.exercise}</Text>
@@ -158,7 +179,6 @@ export default function Workout() {
                 ]}
               />
             </View>
-
             <PanGestureHandler
               onGestureEvent={(event) => {
                 if (event.nativeEvent.translationX < -50) {
@@ -174,16 +194,23 @@ export default function Workout() {
                   type="title"
                   style={[
                     styles.title,
-                    { color: isDark ? colors.primaryDark : colors.primaryLight },
+                    {
+                      color: isDark ? colors.primaryDark : colors.primaryLight,
+                    },
                   ]}
                 >
                   Create Your Workout Plan
                 </ThemedText>
-
-                <ThemedText style={[styles.questionText, { color: isDark ? colors.primaryDark : colors.primaryLight }]}>
+                <ThemedText
+                  style={[
+                    styles.questionText,
+                    {
+                      color: isDark ? colors.primaryDark : colors.primaryLight,
+                    },
+                  ]}
+                >
                   {questions[currentQuestionIndex]}
                 </ThemedText>
-
                 {currentQuestionIndex === 5 ? (
                   // Radio button options for last question
                   fitnessGoals.map((goal) => (
@@ -199,17 +226,33 @@ export default function Workout() {
                             : styles.radio
                         }
                       />
-                      <Text style={[styles.radioText, { color: isDark ? colors.primaryDark : colors.primaryLight }]}>{goal}</Text>
+                      <Text
+                        style={[
+                          styles.radioText,
+                          {
+                            color: isDark
+                              ? colors.primaryDark
+                              : colors.primaryLight,
+                          },
+                        ]}
+                      >
+                        {goal}
+                      </Text>
                     </TouchableOpacity>
                   ))
                 ) : (
+                  // Input field for other questions
                   <TextInput
                     style={[
                       styles.input,
                       {
-                        color: isDark ? colors.primaryDark : colors.primaryLight,
-                        borderColor: isDark ? colors.primaryDark : colors.primaryLight,
-                        backgroundColor: isDark ? '#333333' : '#ffffff',
+                        color: isDark
+                          ? colors.primaryDark
+                          : colors.primaryLight,
+                        borderColor: isDark
+                          ? colors.primaryDark
+                          : colors.primaryLight,
+                        backgroundColor: isDark ? "#333333" : "#ffffff",
                       },
                     ]}
                     placeholder="Type your answer here..."
@@ -223,11 +266,9 @@ export default function Workout() {
                     placeholderTextColor={isDark ? "#cccccc" : "#8D99AE"}
                   />
                 )}
-
                 {errorMessage ? (
                   <Text style={styles.errorText}>{errorMessage}</Text>
                 ) : null}
-
                 {loading ? (
                   <ActivityIndicator size="large" color={colors.accentLight} />
                 ) : (
@@ -235,7 +276,14 @@ export default function Workout() {
                     {/* Back button appears only after the first question */}
                     {currentQuestionIndex > 0 ? (
                       <TouchableOpacity
-                        style={[styles.backButton, { backgroundColor: isDark ? colors.greyContainer : colors.secondary }]}
+                        style={[
+                          styles.backButton,
+                          {
+                            backgroundColor: isDark
+                              ? colors.greyContainer
+                              : colors.secondary,
+                          },
+                        ]}
                         onPress={handleBack}
                       >
                         <ThemedText style={styles.buttonText}>Back</ThemedText>
@@ -246,19 +294,30 @@ export default function Workout() {
 
                     {/* Next button always on the right */}
                     <TouchableOpacity
-                      style={[styles.button, { backgroundColor: isDark ? colors.accentDark : colors.accentLight }]}
+                      style={[
+                        styles.button,
+                        {
+                          backgroundColor: isDark
+                            ? colors.accentDark
+                            : colors.accentLight,
+                        },
+                      ]}
                       onPress={handleNext}
                     >
                       <ThemedText style={styles.buttonText}>Next</ThemedText>
                     </TouchableOpacity>
                   </View>
                 )}
-
                 <TouchableOpacity
-                  style={[styles.cancelButton, { backgroundColor: isDark ? colors.secondary : "#8D99AE" }]}
+                  style={[
+                    styles.cancelButton,
+                    { backgroundColor: isDark ? colors.secondary : "#8D99AE" },
+                  ]}
                   onPress={() => navigation.goBack()}
                 >
-                  <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
+                  <ThemedText style={styles.cancelButtonText}>
+                    Cancel
+                  </ThemedText>
                 </TouchableOpacity>
               </Animated.View>
             </PanGestureHandler>
@@ -269,6 +328,7 @@ export default function Workout() {
   );
 }
 
+// Design and styling for buttons
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,

@@ -6,12 +6,13 @@ import {
   TouchableOpacity,
   Text,
 } from "react-native";
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ThemedText } from "@/components/ThemedText";
 import { useNavigation } from "@react-navigation/native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import Animated, { Layout } from "react-native-reanimated";
 
+// Define theme colours for light and dark modes
 const colors = {
   backgroundLight: "#EDF2F4",
   backgroundDark: "#2B2D42",
@@ -42,11 +43,14 @@ export default function Workout() {
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
+
+  // State to track which routine is expanded
   const [expandedRoutines, setExpandedRoutines] = useState({
     hiit: false,
     strength: false,
   });
 
+  // Toggle function to expand/collapse workout routine dropdowns
   const toggleRoutine = (routine) => {
     setExpandedRoutines((prev) => ({ ...prev, [routine]: !prev[routine] }));
   };
@@ -74,7 +78,6 @@ export default function Workout() {
             Your Fitness Hub
           </ThemedText>
         </View>
-
         <ThemedText
           style={[
             styles.description,
@@ -83,18 +86,18 @@ export default function Workout() {
         >
           Track and personalize your fitness journey.
         </ThemedText>
-
         {/* 🔹 Add New Workout Button */}
         <TouchableOpacity
           style={[
             styles.button,
-            { backgroundColor: isDark ? colors.accentDark : colors.accentLight },
+            {
+              backgroundColor: isDark ? colors.accentDark : colors.accentLight,
+            },
           ]}
           onPress={() => navigation.navigate("CreateWorkout")}
         >
           <ThemedText style={styles.buttonText}>+ Add New Workout</ThemedText>
         </TouchableOpacity>
-
         <View style={styles.section}>
           <ThemedText
             style={[
@@ -189,6 +192,7 @@ export default function Workout() {
   );
 }
 
+// Design and buttons styling
 const styles = StyleSheet.create({
   container: {
     flex: 1,
