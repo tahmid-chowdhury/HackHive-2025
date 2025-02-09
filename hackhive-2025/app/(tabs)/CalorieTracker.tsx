@@ -5,23 +5,24 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  FlatList,
 } from 'react-native';
 import BarcodeScannerComponent from '@/components/ui/BarcodeScanner';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-const colors = {
-  backgroundLight: '#EDF2F4',
-  backgroundDark: '#2B2D42',
-  primaryLight: '#2B2D42',
-  primaryDark: '#EDF2F4',
-  accentLight: '#EF233C', // Red color for light theme
-  accentDark: '#D90429', // Darker red for dark theme
-};
+interface Product {
+  name: string;
+  calories: number;
+  protein: number;
+  carbohydrates: number;
+  fat: number;
+}
 
 const CalorieTrackerScreen = () => {
   const [calories, setCalories] = useState('');
   const [totalCalories, setTotalCalories] = useState(0);
   const [showScanner, setShowScanner] = useState(false);
+  const [scannedItems, setScannedItems] = useState<Product[]>([]);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
@@ -33,26 +34,41 @@ const CalorieTrackerScreen = () => {
     }
   };
 
+  const handleProductScanned = (product: Product) => {
+    setScannedItems((prevItems) => [...prevItems, product]);
+    setTotalCalories((prevTotal) => prevTotal + product.calories);
+  };
+
   return (
     <View
       style={[
         styles.container,
         {
-          backgroundColor: isDark
-            ? colors.backgroundDark
-            : colors.backgroundLight,
+          backgroundColor: isDark ? '#2B2D42' : '#EDF2F4',
         },
       ]}
     >
       {showScanner ? (
-        <BarcodeScannerComponent />
+        <>
+          <BarcodeScannerComponent onProductScanned={handleProductScanned} />
+          <FlatList
+            data={scannedItems}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.itemContainer}>
+                <Text style={styles.itemText}>{item.name}</Text>
+                <Text style={styles.itemText}>
+                  {item.calories} kcal | P: {item.protein}g | C:{' '}
+                  {item.carbohydrates}g | F: {item.fat}g
+                </Text>
+              </View>
+            )}
+          />
+        </>
       ) : (
         <>
           <Text
-            style={[
-              styles.title,
-              { color: isDark ? colors.primaryDark : colors.primaryLight },
-            ]}
+            style={[styles.title, { color: isDark ? '#EDF2F4' : '#2B2D42' }]}
           >
             Calorie Tracker
           </Text>
@@ -60,8 +76,8 @@ const CalorieTrackerScreen = () => {
             style={[
               styles.input,
               {
-                color: isDark ? colors.primaryDark : colors.primaryLight,
-                borderColor: isDark ? colors.primaryDark : colors.primaryLight,
+                color: isDark ? '#EDF2F4' : '#2B2D42',
+                borderColor: isDark ? '#EDF2F4' : '#2B2D42',
                 backgroundColor: isDark ? '#333333' : '#ffffff',
               },
             ]}
@@ -74,21 +90,14 @@ const CalorieTrackerScreen = () => {
           <TouchableOpacity
             style={[
               styles.button,
-              {
-                backgroundColor: isDark
-                  ? colors.accentDark
-                  : colors.accentLight,
-              },
+              { backgroundColor: isDark ? '#D90429' : '#EF233C' },
             ]}
             onPress={addCalories}
           >
             <Text style={styles.buttonText}>Add Calories</Text>
           </TouchableOpacity>
           <Text
-            style={[
-              styles.total,
-              { color: isDark ? colors.primaryDark : colors.primaryLight },
-            ]}
+            style={[styles.total, { color: isDark ? '#EDF2F4' : '#2B2D42' }]}
           >
             Total Calories: {totalCalories}
           </Text>
@@ -97,7 +106,7 @@ const CalorieTrackerScreen = () => {
       <TouchableOpacity
         style={[
           styles.button,
-          { backgroundColor: isDark ? colors.accentDark : colors.accentLight },
+          { backgroundColor: isDark ? '#D90429' : '#EF233C' },
         ]}
         onPress={() => setShowScanner(!showScanner)}
       >
@@ -136,12 +145,26 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     marginVertical: 10,
-    width: '100%', // Make the button full width
+    width: '100%',
   },
   buttonText: {
-    color: 'white', // Text color for the button
+    color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  itemContainer: {
+    padding: 10,
+    marginVertical: 5,
+    backgroundColor: '#ffffff',
+    borderRadius: 5,
+    width: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+  },
+  itemText: {
+    fontSize: 16,
   },
 });
 
