@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 // Use API key from environment variables
-const apiKey = 'AIzaSyBv1fp-WZCt5Jy2Bxr20SyQRrchjTzbWOk';
+const apiKey = '';
 
 export default function GeminiAPI() {
   const [responseText, setResponseText] = useState('Loading...');
