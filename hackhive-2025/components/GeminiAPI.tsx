@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
 // Import Gemini API client
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 // Use API key from environment variables
-const apiKey = "AIzaSyBv1fp-WZCt5Jy2Bxr20SyQRrchjTzbWOk";
+const apiKey = 'AIzaSyBv1fp-WZCt5Jy2Bxr20SyQRrchjTzbWOk';
 
 export default function GeminiAPI() {
-  const [responseText, setResponseText] = useState("Loading...");
+  const [responseText, setResponseText] = useState('Loading...');
 
   useEffect(() => {
     async function fetchContent() {
       try {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-        const prompt = "Explain how AI works";
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+        const prompt = 'Explain how AI works';
         const result = await model.generateContent(prompt);
         setResponseText(result.response.text());
       } catch (error) {
-        setResponseText("Failed to fetch content");
+        setResponseText('Failed to fetch content');
       }
     }
     fetchContent();
@@ -34,22 +34,19 @@ export default function GeminiAPI() {
 
 // Remove or replace the original fetchMealSuggestions function
 
-export async function fetchMealSuggestion(
-  progressData: {
-    totalCaloriesConsumed: number;
-    totalCaloriesGoal: number;
-    proteinConsumed: number;
-    proteinGoal: number;
-    carbsConsumed: number;
-    carbsGoal: number;
-    fatsConsumed: number;
-    fatsGoal: number;
-  },
-  mealIndex: number
-) {
+export async function fetchMealSuggestion(progressData: {
+  totalCaloriesConsumed: number;
+  totalCaloriesGoal: number;
+  proteinConsumed: number;
+  proteinGoal: number;
+  carbsConsumed: number;
+  carbsGoal: number;
+  fatsConsumed: number;
+  fatsGoal: number;
+}) {
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
     const prompt = `Based on the following data:
 Total calorie progress: ${progressData.totalCaloriesConsumed}/${progressData.totalCaloriesGoal};
 Protein: ${progressData.proteinConsumed}g/${progressData.proteinGoal}g;
@@ -61,11 +58,11 @@ Please do not give me any explanations, simply return a JSON in the format:
     const result = await model.generateContent(prompt);
     const responseText = await result.response.text();
     const parsed = JSON.parse(
-      responseText.replace(/```json\n?|```/g, "").trim()
+      responseText.replace(/```json\n?|```/g, '').trim()
     );
     return parsed?.meal || null;
   } catch (error) {
-    console.error("fetchMealSuggestion error:", error);
+    console.error('fetchMealSuggestion error:', error);
     return null;
   }
 }
@@ -82,7 +79,7 @@ export async function fetchSnackSuggestion(progressData: {
 }) {
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
     const prompt = `Based on the following data:
 Total calorie progress: ${progressData.totalCaloriesConsumed}/${progressData.totalCaloriesGoal};
 Protein: ${progressData.proteinConsumed}g/${progressData.proteinGoal}g;
@@ -94,11 +91,11 @@ Please do not give me any explanations, simply return a JSON in the format:
     const result = await model.generateContent(prompt);
     const responseText = await result.response.text();
     const parsed = JSON.parse(
-      responseText.replace(/```json\n?|```/g, "").trim()
+      responseText.replace(/```json\n?|```/g, '').trim()
     );
     return parsed?.snack || null;
   } catch (error) {
-    console.error("fetchSnackSuggestion error:", error);
+    console.error('fetchSnackSuggestion error:', error);
     return null;
   }
 }
@@ -113,7 +110,7 @@ export async function fetchWorkoutRoutine(userData: {
 }) {
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     // Construct AI prompt enforcing JSON response
     const prompt = `Generate a structured workout plan based on the following user details:
@@ -146,8 +143,8 @@ export async function fetchWorkoutRoutine(userData: {
     let responseText = await result.response.text();
 
     //  **Ensure the response is not empty**
-    if (!responseText || responseText.trim() === "") {
-      console.error("Gemini returned an empty response.");
+    if (!responseText || responseText.trim() === '') {
+      console.error('Gemini returned an empty response.');
       return null;
     }
 
@@ -161,17 +158,17 @@ export async function fetchWorkoutRoutine(userData: {
     try {
       const parsed = JSON.parse(responseText);
       if (!parsed?.workout || !parsed.workout.routine) {
-        console.error("Invalid workout JSON format:", parsed);
+        console.error('Invalid workout JSON format:', parsed);
         return null;
       }
       return parsed.workout;
     } catch (jsonError) {
-      console.error("Failed to parse JSON:", jsonError);
-      console.error("Received raw response:", responseText);
+      console.error('Failed to parse JSON:', jsonError);
+      console.error('Received raw response:', responseText);
       return null;
     }
   } catch (error) {
-    console.error("fetchWorkoutRoutine error:", error);
+    console.error('fetchWorkoutRoutine error:', error);
     return null;
   }
 }

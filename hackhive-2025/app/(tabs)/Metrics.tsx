@@ -7,20 +7,8 @@ import {
   fetchMealSuggestion,
   fetchSnackSuggestion,
 } from '@/components/GeminiAPI';
-import { RouteProp, useRoute } from '@react-navigation/native';
 import { useNutrition } from '../context/NutritionContext';
 
-// Define the type for route params
-type MetricsRouteParams = {
-  scannedItem?: {
-    totalCalories: number;
-    protein: number;
-    carbs: number;
-    fats: number;
-  };
-};
-
-// Simple progress bar component
 const ProgressBar = ({
   progress,
   color,
@@ -38,108 +26,66 @@ const ProgressBar = ({
   </View>
 );
 
+type Meal = {
+  name: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fats: number;
+};
+
 export default function Metrics() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
-  const route =
-    useRoute<RouteProp<Record<string, MetricsRouteParams>, string>>();
-  const scannedItem = route.params?.scannedItem;
 
-  // Update initial progress state to start at 0
-  const [progress, setProgress] = useState({
-    totalCaloriesConsumed: 0,
-    totalCaloriesGoal: 2000,
-    proteinConsumed: 0,
-    proteinGoal: 100,
-    carbsConsumed: 0,
-    carbsGoal: 250,
-    fatsConsumed: 0,
-    fatsGoal: 70,
+  const { totalCalories, protein, carbs, fats, addNutrition } = useNutrition();
+  const calorieProgress = totalCalories ? (totalCalories / 2000) * 100 : 0;
+  const proteinProgress = protein ? (protein / 100) * 100 : 0;
+  const carbsProgress = carbs ? (carbs / 250) * 100 : 0;
+  const fatsProgress = fats ? (fats / 70) * 100 : 0;
+
+  const [suggestions, setSuggestions] = useState<{
+    meals: Meal[];
+    snack: Meal | null;
+  }>({
+    meals: [],
+    snack: null,
   });
 
-  // Calculate percentages
-  const { totalCalories, protein, carbs, fats } = useNutrition();
-
-  const calorieProgress = (totalCalories / 2000) * 100;
-  const proteinProgress = (protein / 100) * 100;
-  const carbsProgress = (carbs / 250) * 100;
-  const fatsProgress = (fats / 70) * 100;
-
-  // Add meal function
-  const addMeal = (meal: {
-    totalCalories: number;
-    protein: number;
-    carbs: number;
-    fats: number;
-  }) => {
-    setProgress((prev) => ({
-      ...prev,
-      totalCaloriesConsumed: prev.totalCaloriesConsumed + meal.totalCalories,
-      proteinConsumed: prev.proteinConsumed + meal.protein,
-      carbsConsumed: prev.carbsConsumed + meal.carbs,
-      fatsConsumed: prev.fatsConsumed + meal.fats,
-    }));
-  };
-
-  // Add scanned item if it exists
-  useEffect(() => {
-    if (scannedItem) {
-      addMeal(scannedItem);
-    }
-  }, [scannedItem]);
-
-  const [suggestions, setSuggestions] = useState({
-    meals: [
-      {
-        name: 'Grilled Chicken Salad',
-        calories: 350,
-        protein: 35,
-        carbs: 15,
-        fats: 12,
-      },
-      { name: 'Veggie Wrap', calories: 300, protein: 12, carbs: 45, fats: 8 },
-    ],
-    snack: {
-      name: 'Greek Yogurt',
-      calories: 150,
-      protein: 15,
-      carbs: 8,
-      fats: 5,
-    },
-  });
-
-  async function refreshSuggestion(type: 'meal' | 'snack', mealIndex?: number) {
+  const fetchSuggestions = async () => {
     const progressData = {
-      totalCaloriesConsumed: progress.totalCaloriesConsumed,
-      totalCaloriesGoal: progress.totalCaloriesGoal,
-      proteinConsumed: progress.proteinConsumed,
-      proteinGoal: progress.proteinGoal,
-      carbsConsumed: progress.carbsConsumed,
-      carbsGoal: progress.carbsGoal,
-      fatsConsumed: progress.fatsConsumed,
-      fatsGoal: progress.fatsGoal,
+      totalCaloriesConsumed: totalCalories,
+      totalCaloriesGoal: 2000,
+      proteinConsumed: protein,
+      proteinGoal: 100,
+      carbsConsumed: carbs,
+      carbsGoal: 250,
+      fatsConsumed: fats,
+      fatsGoal: 70,
     };
 
-    if (type === 'meal' && mealIndex !== undefined) {
-      const result = await fetchMealSuggestion(progressData, mealIndex);
-      if (result) {
-        setSuggestions((prev) => ({
-          ...prev,
-          meals: prev.meals.map((meal, idx) =>
-            idx === mealIndex ? result : meal
-          ),
-        }));
-      }
-    } else if (type === 'snack') {
-      const result = await fetchSnackSuggestion(progressData);
-      if (result) {
-        setSuggestions((prev) => ({
-          ...prev,
-          snack: result,
-        }));
-      }
-    }
-  }
+    const mealSuggestion = await fetchMealSuggestion(progressData);
+    const snackSuggestion = await fetchSnackSuggestion(progressData);
+
+    setSuggestions({
+      meals: mealSuggestion ? [mealSuggestion] : [],
+      snack: snackSuggestion || null,
+    });
+  };
+
+  useEffect(() => {
+    fetchSuggestions();
+  }, [totalCalories, protein, carbs, fats]);
+
+  const addMeal = (meal: Meal | null) => {
+    if (!meal) return;
+    addNutrition({
+      calories: meal.calories,
+      protein: meal.protein,
+      carbohydrates: meal.carbs,
+      fat: meal.fats,
+    });
+  };
 
   const lightBarColor = '#EF233C';
   const darkBarColor = '#D90429';
@@ -153,11 +99,9 @@ export default function Metrics() {
       ]}
     >
       <ThemedText type="title" style={styles.sectionTitle}>
-        {' '}
-        Metrics{' '}
+        Metrics
       </ThemedText>
 
-      {/* Total Calorie Progress Container */}
       <View
         style={[
           styles.metricSection,
@@ -167,29 +111,37 @@ export default function Metrics() {
         <ThemedText type="subtitle">Total Calorie Progress</ThemedText>
         <ProgressBar progress={calorieProgress} color={'#fff'} />
         <ThemedText style={styles.detailText}>
-          {totalCalories} / 2000 cal
+          {totalCalories || 0} / 2000 cal
         </ThemedText>
       </View>
 
-      {/* Macro Breakdown Container */}
       <View style={[styles.metricSection, styles.greyContainer]}>
         <ThemedText type="subtitle">Macro Breakdown</ThemedText>
         <ThemedText>Protein</ThemedText>
         <ProgressBar progress={proteinProgress} color={progressColor} />
-        <ThemedText style={styles.detailText}>{protein}g / 100g</ThemedText>
+        <ThemedText style={styles.detailText}>
+          {protein || 0}g / 100g
+        </ThemedText>
 
         <ThemedText>Carbohydrates</ThemedText>
         <ProgressBar progress={carbsProgress} color={progressColor} />
-        <ThemedText style={styles.detailText}>{carbs}g / 250g</ThemedText>
+        <ThemedText style={styles.detailText}>{carbs || 0}g / 250g</ThemedText>
 
         <ThemedText>Fats</ThemedText>
         <ProgressBar progress={fatsProgress} color={progressColor} />
-        <ThemedText style={styles.detailText}>{fats}g / 70g</ThemedText>
+        <ThemedText style={styles.detailText}>{fats || 0}g / 70g</ThemedText>
       </View>
 
-      {/* Recommended Options Container */}
       <View style={[styles.metricSection, styles.greyContainer]}>
         <ThemedText type="subtitle">Recommended Options</ThemedText>
+
+        <TouchableOpacity
+          style={styles.refreshButton}
+          onPress={fetchSuggestions}
+        >
+          <ThemedText style={styles.buttonText}>Refresh Suggestions</ThemedText>
+        </TouchableOpacity>
+
         {suggestions.meals.map((meal, idx) => (
           <View key={idx} style={styles.mealOption}>
             <View style={styles.mealInfo}>
@@ -199,37 +151,25 @@ export default function Metrics() {
                 {meal.fats}g
               </ThemedText>
             </View>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.actionButton}
-                onPress={() => refreshSuggestion('meal', idx)}
-              >
-                <ThemedText style={styles.buttonText}>Refresh</ThemedText>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.actionButton}
-                onPress={() => addMeal(meal)}
-              >
-                <ThemedText style={styles.buttonText}>Add</ThemedText>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ))}
-        <View style={styles.mealOption}>
-          <View style={styles.mealInfo}>
-            <ThemedText>Snack: {suggestions.snack.name}</ThemedText>
-            <ThemedText style={styles.detailText}>
-              {suggestions.snack.calories} cal | P: {suggestions.snack.protein}g
-              | C: {suggestions.snack.carbs}g | F: {suggestions.snack.fats}g
-            </ThemedText>
-          </View>
-          <View style={styles.buttonContainer}>
             <TouchableOpacity
               style={styles.actionButton}
-              onPress={() => refreshSuggestion('snack')}
+              onPress={() => addMeal(meal)}
             >
-              <ThemedText style={styles.buttonText}>Refresh</ThemedText>
+              <ThemedText style={styles.buttonText}>Add</ThemedText>
             </TouchableOpacity>
+          </View>
+        ))}
+
+        {suggestions.snack && (
+          <View style={styles.mealOption}>
+            <View style={styles.mealInfo}>
+              <ThemedText>Snack: {suggestions.snack.name}</ThemedText>
+              <ThemedText style={styles.detailText}>
+                {suggestions.snack.calories} cal | P:{' '}
+                {suggestions.snack.protein}g | C: {suggestions.snack.carbs}g |
+                F: {suggestions.snack.fats}g
+              </ThemedText>
+            </View>
             <TouchableOpacity
               style={styles.actionButton}
               onPress={() => addMeal(suggestions.snack)}
@@ -237,27 +177,16 @@ export default function Metrics() {
               <ThemedText style={styles.buttonText}>Add</ThemedText>
             </TouchableOpacity>
           </View>
-        </View>
+        )}
       </View>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-  },
-  sectionTitle: {
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  detailText: {
-    marginTop: 5,
-    fontSize: 14,
-    textAlign: 'center',
-  },
+  container: { flex: 1, padding: 20, justifyContent: 'center' },
+  sectionTitle: { marginBottom: 10, textAlign: 'center' },
+  detailText: { marginTop: 5, fontSize: 14, textAlign: 'center' },
   progressBarContainer: {
     height: 10,
     width: '100%',
@@ -266,15 +195,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginVertical: 5,
   },
-  progressBar: {
-    height: '100%',
-    borderRadius: 5,
-  },
-  metricSection: {
-    padding: 15,
-    borderRadius: 10,
-    marginVertical: 10,
-  },
+  progressBar: { height: '100%', borderRadius: 5 },
+  metricSection: { padding: 15, borderRadius: 10, marginVertical: 10 },
   mealOption: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -284,24 +206,21 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     marginVertical: 5,
   },
-  mealInfo: {
-    flex: 1,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-  },
+  mealInfo: { flex: 1 },
   actionButton: {
     backgroundColor: '#EF233C',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 5,
-    marginLeft: 5,
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 12,
+  refreshButton: {
+    backgroundColor: '#4CAF50',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 5,
+    marginBottom: 10,
+    alignItems: 'center',
   },
-  greyContainer: {
-    backgroundColor: '#8d99ae',
-  },
+  buttonText: { color: '#fff', fontSize: 12 },
+  greyContainer: { backgroundColor: '#8d99ae' },
 });
