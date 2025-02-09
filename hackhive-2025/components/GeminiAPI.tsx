@@ -109,23 +109,29 @@ export async function fetchWorkoutRoutine(userData: {
   weight: number;
   workoutDays: number;
   duration: number;
-  carbsGoal: number;
-  fatsConsumed: number;
-  fatsGoal: number;
+  fitnessGoal: string;
 }) {
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-    // Construct a prompt using user responses
-    const prompt = `Based on the following user details, generate a personalized workout routine:
-    Age: ${userData.age} years old
-    Height: ${userData.height} cm
-    Weight: ${userData.weight} kg
-    Workout Frequency: ${userData.workoutDays} days per week
-    Preferred Workout Duration: ${userData.duration} minutes
-    Provide a structured workout plan with exercises, sets, and reps unless of course the exercise does not require either sets or reps.
-    Please do not give me any explanations, simply return a JSON in the format:
+    // Construct AI prompt enforcing JSON response
+    const prompt = `Generate a structured workout plan based on the following user details:
+
+    - Age: ${userData.age} years old
+    - Height: ${userData.height} cm
+    - Weight: ${userData.weight} kg
+    - Workout Frequency: ${userData.workoutDays} days per week
+    - Preferred Workout Duration: ${userData.duration} minutes
+    - Fitness Goal: ${userData.fitnessGoal}
+
+    Adjust the workout for their goal:
+    - **Lean & Toned** → High-rep, low-weight, cardio-intensive exercises.
+    - **Muscular & Strong** → Compound lifts, moderate reps, progressive overload.
+    - **Bulk & Mass** → Heavy lifting, low reps, high intensity.
+
+    **RETURN STRICT JSON ONLY (NO EXPLANATIONS):**
+    \`\`\`json
     {
       "workout": {
         "routine": [
@@ -133,16 +139,37 @@ export async function fetchWorkoutRoutine(userData: {
           {"exercise": "Exercise Name", "sets": 3, "reps": 10}
         ]
       }
-    }`;
+    }
+    \`\`\``;
 
     const result = await model.generateContent(prompt);
-    const responseText = await result.response.text();
+    let responseText = await result.response.text();
 
-    // Parse JSON output from Gemini
-    const parsed = JSON.parse(
-      responseText.replace(/```json\n?|```/g, "").trim()
-    );
-    return parsed?.workout || null;
+    //  **Ensure the response is not empty**
+    if (!responseText || responseText.trim() === "") {
+      console.error("Gemini returned an empty response.");
+      return null;
+    }
+
+    //  **Extract JSON if it's inside markdown**
+    const jsonMatch = responseText.match(/```json([\s\S]*?)```/);
+    if (jsonMatch) {
+      responseText = jsonMatch[1].trim();
+    }
+
+    //  **Parse JSON safely**
+    try {
+      const parsed = JSON.parse(responseText);
+      if (!parsed?.workout || !parsed.workout.routine) {
+        console.error("Invalid workout JSON format:", parsed);
+        return null;
+      }
+      return parsed.workout;
+    } catch (jsonError) {
+      console.error("Failed to parse JSON:", jsonError);
+      console.error("Received raw response:", responseText);
+      return null;
+    }
   } catch (error) {
     console.error("fetchWorkoutRoutine error:", error);
     return null;
