@@ -36,7 +36,8 @@ export default function GeminiAPI() {
 
 export async function fetchMealSuggestion(
   progressData: {
-    calorieProgress: number;
+    totalCaloriesConsumed: number;
+    totalCaloriesGoal: number;
     proteinConsumed: number;
     proteinGoal: number;
     carbsConsumed: number;
@@ -102,7 +103,16 @@ Please do not give me any explanations, simply return a JSON in the format:
   }
 }
 
-export async function fetchWorkoutRoutine(userData) {
+export async function fetchWorkoutRoutine(userData: {
+    age: number;
+    height: number;
+    weight: number;
+    workoutDays: number;
+    duration: number;
+    carbsGoal: number;
+    fatsConsumed: number;
+    fatsGoal: number;
+  }) {
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
@@ -115,7 +125,7 @@ export async function fetchWorkoutRoutine(userData) {
     Workout Frequency: ${userData.workoutDays} days per week
     Preferred Workout Duration: ${userData.duration} minutes
     Provide a structured workout plan with exercises, sets, and reps.
-    Return a JSON response in the format:
+    Please do not give me any explanations, simply return a JSON in the format:
     {
       "workout": {
         "routine": [
