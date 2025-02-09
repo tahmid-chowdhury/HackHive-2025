@@ -5,7 +5,6 @@ import axios from 'axios';
 
 interface BarcodeScannerProps {
   onProductScanned: (product: Product) => void;
-  onBack: () => void;
 }
 
 interface Product {
@@ -18,7 +17,6 @@ interface Product {
 
 const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
   onProductScanned,
-  onBack,
 }) => {
   const [permission, requestPermission] = useCameraPermissions();
   const [scanning, setScanning] = useState(false);
