@@ -117,7 +117,7 @@ export default function Workout() {
   });
 
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <GestureHandlerRootView style={[styles.container, { backgroundColor: isDark ? colors.backgroundDark : colors.backgroundLight }]}>
       {workoutRoutine ? (
         <ScrollView style={styles.resultsContainer}>
           <ThemedText type="title" style={styles.title}>
@@ -179,7 +179,7 @@ export default function Workout() {
                 Create Your Workout Plan
               </ThemedText>
 
-              <ThemedText style={styles.questionText}>
+              <ThemedText style={[styles.questionText, { color: isDark ? colors.primaryDark : colors.primaryLight }]}>
                 {questions[currentQuestionIndex]}
               </ThemedText>
 
@@ -198,12 +198,19 @@ export default function Workout() {
                           : styles.radio
                       }
                     />
-                    <Text style={styles.radioText}>{goal}</Text>
+                    <Text style={[styles.radioText, { color: isDark ? colors.primaryDark : colors.primaryLight }]}>{goal}</Text>
                   </TouchableOpacity>
                 ))
               ) : (
                 <TextInput
-                  style={styles.input}
+                  style={[
+                    styles.input,
+                    {
+                      color: isDark ? colors.primaryDark : colors.primaryLight,
+                      borderColor: isDark ? colors.primaryDark : colors.primaryLight,
+                      backgroundColor: isDark ? '#333333' : '#ffffff',
+                    },
+                  ]}
                   placeholder="Type your answer here..."
                   value={input}
                   onChangeText={setInput}
@@ -212,7 +219,7 @@ export default function Workout() {
                       ? "numeric"
                       : "default"
                   }
-                  placeholderTextColor="#8D99AE"
+                  placeholderTextColor={isDark ? "#cccccc" : "#8D99AE"}
                 />
               )}
 
@@ -227,7 +234,7 @@ export default function Workout() {
                   {/* Back button appears only after the first question */}
                   {currentQuestionIndex > 0 ? (
                     <TouchableOpacity
-                      style={styles.backButton}
+                      style={[styles.backButton, { backgroundColor: isDark ? colors.greyContainer : colors.secondary }]}
                       onPress={handleBack}
                     >
                       <ThemedText style={styles.buttonText}>Back</ThemedText>
@@ -237,14 +244,17 @@ export default function Workout() {
                   )}
 
                   {/* Next button always on the right */}
-                  <TouchableOpacity style={styles.button} onPress={handleNext}>
+                  <TouchableOpacity
+                    style={[styles.button, { backgroundColor: isDark ? colors.accentDark : colors.accentLight }]}
+                    onPress={handleNext}
+                  >
                     <ThemedText style={styles.buttonText}>Next</ThemedText>
                   </TouchableOpacity>
                 </View>
               )}
 
               <TouchableOpacity
-                style={styles.cancelButton}
+                style={[styles.cancelButton, { backgroundColor: isDark ? colors.secondary : "#8D99AE" }]}
                 onPress={() => navigation.goBack()}
               >
                 <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
