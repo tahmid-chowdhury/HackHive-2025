@@ -21,7 +21,6 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from "react-native-reanimated";
-
 import { fetchWorkoutRoutine } from "@/components/GeminiAPI"; // Import function
 
 const { width } = Dimensions.get("window");
@@ -42,9 +41,12 @@ const questions = [
   "What is your weight (kg)?",
   "How many days per week do you want to work out?",
   "What is your preferred workout duration (Minutes)?",
+  "What is your fitness goal?", // New final question with radio buttons
 ];
 
-const numericQuestions = new Set(questions);
+const numericQuestions = new Set(questions.slice(0, 5)); // First 5 questions require numeric input
+
+const fitnessGoals = ["Lean & Toned", "Muscular & Strong", "Bulk & Mass"]; // Options for the last question
 
 export default function Workout() {
   const navigation = useNavigation();
@@ -53,6 +55,7 @@ export default function Workout() {
   const [responses, setResponses] = useState({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [input, setInput] = useState("");
+  const [selectedGoal, setSelectedGoal] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [workoutRoutine, setWorkoutRoutine] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -60,19 +63,25 @@ export default function Workout() {
   const translateX = useSharedValue(0);
 
   const handleNext = async () => {
-    if (input.trim() === "") {
-      setErrorMessage("Please enter a value");
+    if (currentQuestionIndex === 5 && !selectedGoal) {
+      setErrorMessage("Please select a fitness goal.");
+      return;
+    }
+
+    if (input.trim() === "" && currentQuestionIndex < 5) {
+      setErrorMessage("Please enter a value.");
       return;
     }
 
     if (numericQuestions.has(questions[currentQuestionIndex]) && isNaN(input)) {
-      setErrorMessage("Please enter a valid numeric value");
+      setErrorMessage("Please enter a valid numeric value.");
       return;
     }
 
     setResponses((prev) => ({
       ...prev,
-      [questions[currentQuestionIndex]]: input,
+      [questions[currentQuestionIndex]]:
+        currentQuestionIndex === 5 ? selectedGoal : input,
     }));
     setInput("");
     setErrorMessage("");
@@ -81,10 +90,10 @@ export default function Workout() {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
       console.log("Final Responses: ", responses);
-      setLoading(true); // Show loading indicator
+      setLoading(true);
       try {
         const routine = await fetchWorkoutRoutine(responses);
-        setWorkoutRoutine(routine); // Save routine to state
+        setWorkoutRoutine(routine);
       } catch (error) {
         console.error("Error fetching workout routine:", error);
         setErrorMessage("Failed to generate workout routine. Try again.");
@@ -164,18 +173,38 @@ export default function Workout() {
                 {questions[currentQuestionIndex]}
               </ThemedText>
 
-              <TextInput
-                style={styles.input}
-                placeholder="Type your answer here..."
-                value={input}
-                onChangeText={setInput}
-                keyboardType={
-                  numericQuestions.has(questions[currentQuestionIndex])
-                    ? "numeric"
-                    : "default"
-                }
-                placeholderTextColor="#8D99AE"
-              />
+              {currentQuestionIndex === 5 ? (
+                // Radio button options for last question
+                fitnessGoals.map((goal) => (
+                  <TouchableOpacity
+                    key={goal}
+                    style={styles.radioContainer}
+                    onPress={() => setSelectedGoal(goal)}
+                  >
+                    <View
+                      style={
+                        selectedGoal === goal
+                          ? styles.radioSelected
+                          : styles.radio
+                      }
+                    />
+                    <Text style={styles.radioText}>{goal}</Text>
+                  </TouchableOpacity>
+                ))
+              ) : (
+                <TextInput
+                  style={styles.input}
+                  placeholder="Type your answer here..."
+                  value={input}
+                  onChangeText={setInput}
+                  keyboardType={
+                    numericQuestions.has(questions[currentQuestionIndex])
+                      ? "numeric"
+                      : "default"
+                  }
+                  placeholderTextColor="#8D99AE"
+                />
+              )}
 
               {errorMessage ? (
                 <Text style={styles.errorText}>{errorMessage}</Text>
@@ -219,6 +248,30 @@ export default function Workout() {
 }
 
 const styles = StyleSheet.create({
+  // Add styles for radio buttons
+  radioContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  radio: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "#8D99AE",
+    marginRight: 10,
+  },
+  radioSelected: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: "#EF233C",
+    marginRight: 10,
+  },
+  radioText: {
+    fontSize: 16,
+  },
   container: {
     flex: 1,
     justifyContent: "center",
