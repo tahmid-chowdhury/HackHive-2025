@@ -7,8 +7,6 @@ import {
   Text,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { IconSymbol } from "@/components/ui/IconSymbol";
 import { useNavigation } from "@react-navigation/native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import Animated, { Layout } from "react-native-reanimated";
@@ -64,11 +62,6 @@ export default function Workout() {
       ]}
     >
       <View style={styles.header}>
-        <IconSymbol
-          size={80}
-          color={isDark ? colors.primaryDark : colors.primaryLight}
-          name="dumbbell"
-        />
         <ThemedText
           type="title"
           style={[
@@ -123,75 +116,84 @@ export default function Workout() {
           Recommended Routines
         </ThemedText>
 
-        {/* 🔹 HIIT Routine Button */}
-        <TouchableOpacity
-          style={[styles.card, { backgroundColor: colors.secondary }]}
-          onPress={() => toggleRoutine("hiit")}
-        >
-          <ThemedText style={[styles.cardTitle, { color: colors.accentDark }]}>
-            🔥 HIIT Blast
-          </ThemedText>
-          <ThemedText
-            style={[
-              styles.cardText,
-              { color: isDark ? colors.primaryDark : colors.primaryLight },
-            ]}
+        {/* 🔹 HIIT Routine Button & Dropdown */}
+        <View>
+          <TouchableOpacity
+            style={[styles.card, { backgroundColor: colors.secondary }]}
+            onPress={() => toggleRoutine("hiit")}
           >
-            Short and intense workouts
-          </ThemedText>
-        </TouchableOpacity>
+            <ThemedText
+              style={[styles.cardTitle, { color: colors.accentDark }]}
+            >
+              🔥 HIIT Blast
+            </ThemedText>
+            <ThemedText
+              style={[
+                styles.cardText,
+                { color: isDark ? colors.primaryDark : colors.primaryLight },
+              ]}
+            >
+              Short and intense workouts
+            </ThemedText>
+          </TouchableOpacity>
 
-        {/* 🔹 HIIT Routine Dropdown */}
-        {expandedRoutines.hiit && (
-          <Animated.View
-            style={styles.routineContainer}
-            layout={Layout.springify()}
-          >
-            {workoutRoutines.hiit.map((exercise, index) => (
-              <View key={index} style={styles.exerciseContainer}>
-                <Text style={styles.exerciseName}>{exercise.exercise}</Text>
-                <Text style={styles.setsReps}>
-                  {exercise.sets} Sets × {exercise.reps} Reps
-                </Text>
-              </View>
-            ))}
-          </Animated.View>
-        )}
+          {expandedRoutines.hiit && (
+            <Animated.View
+              style={styles.routineContainer}
+              layout={Layout.springify()}
+            >
+              {workoutRoutines.hiit.map((exercise, index) => (
+                <View key={index} style={styles.exerciseContainer}>
+                  <Text style={styles.exerciseName}>{exercise.exercise}</Text>
+                  <Text style={styles.setsReps}>
+                    {exercise.sets} Sets × {exercise.reps} Reps
+                  </Text>
+                </View>
+              ))}
+            </Animated.View>
+          )}
+        </View>
 
-        {/* 🔹 Strength Training Button */}
-        <TouchableOpacity
-          style={[styles.card, { backgroundColor: colors.secondary }]}
-          onPress={() => toggleRoutine("strength")}
-        >
-          <ThemedText style={[styles.cardTitle, { color: colors.accentDark }]}>
-            💪 Strength Training
-          </ThemedText>
-          <ThemedText
-            style={[
-              styles.cardText,
-              { color: isDark ? colors.primaryDark : colors.primaryLight },
-            ]}
-          >
-            Build muscle and endurance
-          </ThemedText>
-        </TouchableOpacity>
+        {/* 🔹 Space Between HIIT and Strength */}
+        {expandedRoutines.hiit && <View style={styles.spacing} />}
 
-        {/* 🔹 Strength Routine Dropdown */}
-        {expandedRoutines.strength && (
-          <Animated.View
-            style={styles.routineContainer}
-            layout={Layout.springify()}
+        {/* 🔹 Strength Routine Button & Dropdown */}
+        <View>
+          <TouchableOpacity
+            style={[styles.card, { backgroundColor: colors.secondary }]}
+            onPress={() => toggleRoutine("strength")}
           >
-            {workoutRoutines.strength.map((exercise, index) => (
-              <View key={index} style={styles.exerciseContainer}>
-                <Text style={styles.exerciseName}>{exercise.exercise}</Text>
-                <Text style={styles.setsReps}>
-                  {exercise.sets} Sets × {exercise.reps} Reps
-                </Text>
-              </View>
-            ))}
-          </Animated.View>
-        )}
+            <ThemedText
+              style={[styles.cardTitle, { color: colors.accentDark }]}
+            >
+              💪 Strength Training
+            </ThemedText>
+            <ThemedText
+              style={[
+                styles.cardText,
+                { color: isDark ? colors.primaryDark : colors.primaryLight },
+              ]}
+            >
+              Build muscle and endurance
+            </ThemedText>
+          </TouchableOpacity>
+
+          {expandedRoutines.strength && (
+            <Animated.View
+              style={styles.routineContainer}
+              layout={Layout.springify()}
+            >
+              {workoutRoutines.strength.map((exercise, index) => (
+                <View key={index} style={styles.exerciseContainer}>
+                  <Text style={styles.exerciseName}>{exercise.exercise}</Text>
+                  <Text style={styles.setsReps}>
+                    {exercise.sets} Sets × {exercise.reps} Reps
+                  </Text>
+                </View>
+              ))}
+            </Animated.View>
+          )}
+        </View>
       </View>
     </ScrollView>
   );
@@ -238,7 +240,7 @@ const styles = StyleSheet.create({
   card: {
     padding: 15,
     borderRadius: 10,
-    marginBottom: 10,
+    marginBottom: 5, // Reduced space to make dropdown closer to button
   },
   cardTitle: {
     fontSize: 20,
@@ -248,10 +250,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   routineContainer: {
-    marginTop: 5,
+    marginTop: -5, // Adjusted so it sticks directly below the button
     padding: 15,
     borderRadius: 10,
     backgroundColor: colors.primaryLight,
+  },
+  spacing: {
+    height: 20, // 👈 Added spacing between HIIT and Strength
   },
   exerciseContainer: {
     backgroundColor: colors.primaryDark,
