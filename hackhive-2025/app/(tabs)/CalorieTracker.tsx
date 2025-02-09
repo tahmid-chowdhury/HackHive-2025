@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-  ScrollView,
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, ScrollView } from 'react-native';
 import BarcodeScannerComponent from '@/components/ui/BarcodeScanner';
 import { useColorScheme } from '@/hooks/useColorScheme';
+
+// Define a consistent color scheme with light/dark mode options
+const colors = {
+  backgroundLight: "#EDF2F4",
+  backgroundDark: "#2B2D42",
+  primaryLight: "#2B2D42",
+  primaryDark: "#EDF2F4",
+  accentLight: "#EF233C",
+  accentDark: "#D90429",
+  secondary: "#8D99AE",
+};
 
 interface Product {
   name: string;
@@ -50,10 +53,9 @@ const CalorieTrackerScreen = () => {
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
               <View style={styles.itemContainer}>
-                <Text style={styles.itemText}>{item.name}</Text>
-                <Text style={styles.itemText}>
-                  {item.calories} kcal | P: {item.protein}g | C:{' '}
-                  {item.carbohydrates}g | F: {item.fat}g
+                <Text style={[styles.itemText, { color: isDark ? colors.primaryDark : colors.primaryLight }]}>{item.name}</Text>
+                <Text style={[styles.itemText, { color: isDark ? colors.primaryDark : colors.primaryLight }]}>
+                  {item.calories} kcal | P: {item.protein}g | C: {item.carbohydrates}g | F: {item.fat}g
                 </Text>
               </View>
             )}
@@ -61,47 +63,37 @@ const CalorieTrackerScreen = () => {
         </>
       ) : (
         <>
-          <Text
-            style={[styles.title, { color: isDark ? '#EDF2F4' : '#2B2D42' }]}
-          >
+          <Text style={[styles.title, { color: isDark ? colors.primaryDark : colors.primaryLight }]}>
             Calorie Tracker
           </Text>
           <TextInput
             style={[
               styles.input,
               {
-                color: isDark ? '#EDF2F4' : '#2B2D42',
-                borderColor: isDark ? '#EDF2F4' : '#2B2D42',
+                color: isDark ? colors.primaryDark : colors.primaryLight,
+                borderColor: isDark ? colors.primaryDark : colors.primaryLight,
                 backgroundColor: isDark ? '#333333' : '#ffffff',
               },
             ]}
             placeholder="Enter calories"
-            placeholderTextColor={isDark ? '#cccccc' : '#888888'}
+            placeholderTextColor={isDark ? "#cccccc" : "#888888"}
             keyboardType="numeric"
             value={calories}
             onChangeText={setCalories}
           />
           <TouchableOpacity
-            style={[
-              styles.button,
-              { backgroundColor: isDark ? '#D90429' : '#EF233C' },
-            ]}
+            style={[styles.button, { backgroundColor: isDark ? colors.accentDark : colors.accentLight }]}
             onPress={addCalories}
           >
             <Text style={styles.buttonText}>Add Calories</Text>
           </TouchableOpacity>
-          <Text
-            style={[styles.total, { color: isDark ? '#EDF2F4' : '#2B2D42' }]}
-          >
+          <Text style={[styles.total, { color: isDark ? colors.primaryDark : colors.primaryLight }]}>
             Total Calories: {totalCalories}
           </Text>
         </>
       )}
       <TouchableOpacity
-        style={[
-          styles.button,
-          { backgroundColor: isDark ? '#D90429' : '#EF233C' },
-        ]}
+        style={[styles.button, { backgroundColor: isDark ? colors.accentDark : colors.accentLight }]}
         onPress={() => setShowScanner(!showScanner)}
       >
         <Text style={styles.buttonText}>
