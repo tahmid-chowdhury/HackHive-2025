@@ -1,10 +1,17 @@
-import React from "react";
-import { StyleSheet, ScrollView, View, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  ScrollView,
+  View,
+  TouchableOpacity,
+  Text,
+} from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { useNavigation } from "@react-navigation/native";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import Animated, { Layout } from "react-native-reanimated";
 
 const colors = {
   backgroundLight: "#EDF2F4",
@@ -16,10 +23,34 @@ const colors = {
   secondary: "#8D99AE",
 };
 
+// 🔹 Predefined Workout Routines
+const workoutRoutines = {
+  hiit: [
+    { exercise: "Jump Squats", sets: 3, reps: 15 },
+    { exercise: "Burpees", sets: 3, reps: 10 },
+    { exercise: "Mountain Climbers", sets: 3, reps: 30 },
+    { exercise: "Plank to Push-up", sets: 3, reps: 12 },
+  ],
+  strength: [
+    { exercise: "Bench Press", sets: 4, reps: 10 },
+    { exercise: "Deadlifts", sets: 3, reps: 8 },
+    { exercise: "Squats", sets: 4, reps: 12 },
+    { exercise: "Bicep Curls", sets: 3, reps: 15 },
+  ],
+};
+
 export default function Workout() {
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
+  const [expandedRoutines, setExpandedRoutines] = useState({
+    hiit: false,
+    strength: false,
+  });
+
+  const toggleRoutine = (routine) => {
+    setExpandedRoutines((prev) => ({ ...prev, [routine]: !prev[routine] }));
+  };
 
   return (
     <ScrollView
@@ -58,6 +89,7 @@ export default function Workout() {
         Track and personalize your fitness journey.
       </ThemedText>
 
+      {/* 🔹 Add New Workout Button */}
       <TouchableOpacity
         style={[
           styles.button,
@@ -68,6 +100,7 @@ export default function Workout() {
         <ThemedText style={styles.buttonText}>+ Add New Workout</ThemedText>
       </TouchableOpacity>
 
+      {/* 🔹 View Workout Results Button */}
       <TouchableOpacity
         style={[
           styles.button,
@@ -89,8 +122,11 @@ export default function Workout() {
         >
           Recommended Routines
         </ThemedText>
+
+        {/* 🔹 HIIT Routine Button */}
         <TouchableOpacity
           style={[styles.card, { backgroundColor: colors.secondary }]}
+          onPress={() => toggleRoutine("hiit")}
         >
           <ThemedText style={[styles.cardTitle, { color: colors.accentDark }]}>
             🔥 HIIT Blast
@@ -105,8 +141,27 @@ export default function Workout() {
           </ThemedText>
         </TouchableOpacity>
 
+        {/* 🔹 HIIT Routine Dropdown */}
+        {expandedRoutines.hiit && (
+          <Animated.View
+            style={styles.routineContainer}
+            layout={Layout.springify()}
+          >
+            {workoutRoutines.hiit.map((exercise, index) => (
+              <View key={index} style={styles.exerciseContainer}>
+                <Text style={styles.exerciseName}>{exercise.exercise}</Text>
+                <Text style={styles.setsReps}>
+                  {exercise.sets} Sets × {exercise.reps} Reps
+                </Text>
+              </View>
+            ))}
+          </Animated.View>
+        )}
+
+        {/* 🔹 Strength Training Button */}
         <TouchableOpacity
           style={[styles.card, { backgroundColor: colors.secondary }]}
+          onPress={() => toggleRoutine("strength")}
         >
           <ThemedText style={[styles.cardTitle, { color: colors.accentDark }]}>
             💪 Strength Training
@@ -120,6 +175,23 @@ export default function Workout() {
             Build muscle and endurance
           </ThemedText>
         </TouchableOpacity>
+
+        {/* 🔹 Strength Routine Dropdown */}
+        {expandedRoutines.strength && (
+          <Animated.View
+            style={styles.routineContainer}
+            layout={Layout.springify()}
+          >
+            {workoutRoutines.strength.map((exercise, index) => (
+              <View key={index} style={styles.exerciseContainer}>
+                <Text style={styles.exerciseName}>{exercise.exercise}</Text>
+                <Text style={styles.setsReps}>
+                  {exercise.sets} Sets × {exercise.reps} Reps
+                </Text>
+              </View>
+            ))}
+          </Animated.View>
+        )}
       </View>
     </ScrollView>
   );
@@ -148,7 +220,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 15,
   },
   buttonText: {
     fontSize: 18,
@@ -174,5 +246,26 @@ const styles = StyleSheet.create({
   },
   cardText: {
     fontSize: 16,
+  },
+  routineContainer: {
+    marginTop: 5,
+    padding: 15,
+    borderRadius: 10,
+    backgroundColor: colors.primaryLight,
+  },
+  exerciseContainer: {
+    backgroundColor: colors.primaryDark,
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 5,
+  },
+  exerciseName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: colors.accentDark,
+  },
+  setsReps: {
+    fontSize: 16,
+    color: colors.primaryLight,
   },
 });
