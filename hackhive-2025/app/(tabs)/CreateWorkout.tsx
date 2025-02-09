@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import {
   StyleSheet,
+  ScrollView,
   View,
   TextInput,
   TouchableOpacity,
   Dimensions,
   Text,
-  ScrollView,
   ActivityIndicator,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
@@ -117,157 +117,162 @@ export default function Workout() {
   });
 
   return (
-    <GestureHandlerRootView style={[styles.container, { backgroundColor: isDark ? colors.backgroundDark : colors.backgroundLight }]}>
-      {workoutRoutine ? (
-        <ScrollView style={styles.resultsContainer}>
-          <ThemedText type="title" style={styles.title}>
-            Your Personalized Workout
-          </ThemedText>
-          {workoutRoutine.routine.map((exercise, index) => (
-            <View key={index} style={styles.exerciseContainer}>
-              <Text style={styles.exerciseName}>{exercise.exercise}</Text>
-              <Text style={styles.setsReps}>
-                {exercise.sets} Sets × {exercise.reps} Reps
-              </Text>
-            </View>
-          ))}
-          <TouchableOpacity
-            style={styles.hubButton}
-            onPress={() =>
-              navigation.reset({ index: 0, routes: [{ name: "Workout" }] })
-            }
-          >
-            <ThemedText style={styles.buttonText}>
-              🏠 Back to Workout Hub
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <GestureHandlerRootView style={[styles.container, { backgroundColor: isDark ? colors.backgroundDark : colors.backgroundLight }]}>
+        {workoutRoutine ? (
+          <ScrollView style={styles.resultsContainer}>
+            <ThemedText type="title" style={styles.title}>
+              Your Personalized Workout
             </ThemedText>
-          </TouchableOpacity>
-        </ScrollView>
-      ) : (
-        <>
-          {/* Progress Bar */}
-          <View style={styles.progressBarContainer}>
-            <View
-              style={[
-                styles.progressBar,
-                {
-                  width: `${
-                    ((currentQuestionIndex + 1) / questions.length) * 100
-                  }%`,
-                },
-              ]}
-            />
-          </View>
-
-          <PanGestureHandler
-            onGestureEvent={(event) => {
-              if (event.nativeEvent.translationX < -50) {
-                handleNext();
-                translateX.value = withSpring(-width, {}, () => {
-                  translateX.value = 0;
-                });
+            {workoutRoutine.routine.map((exercise, index) => (
+              <View key={index} style={styles.exerciseContainer}>
+                <Text style={styles.exerciseName}>{exercise.exercise}</Text>
+                <Text style={styles.setsReps}>
+                  {exercise.sets} Sets × {exercise.reps} Reps
+                </Text>
+              </View>
+            ))}
+            <TouchableOpacity
+              style={styles.hubButton}
+              onPress={() =>
+                navigation.reset({ index: 0, routes: [{ name: "Workout" }] })
               }
-            }}
-          >
-            <Animated.View style={[styles.questionContainer, animatedStyle]}>
-              <ThemedText
-                type="title"
+            >
+              <ThemedText style={styles.buttonText}>
+                🏠 Back to Workout Hub
+              </ThemedText>
+            </TouchableOpacity>
+          </ScrollView>
+        ) : (
+          <>
+            {/* Progress Bar */}
+            <View style={styles.progressBarContainer}>
+              <View
                 style={[
-                  styles.title,
-                  { color: isDark ? colors.primaryDark : colors.primaryLight },
+                  styles.progressBar,
+                  {
+                    width: `${
+                      ((currentQuestionIndex + 1) / questions.length) * 100
+                    }%`,
+                  },
                 ]}
-              >
-                Create Your Workout Plan
-              </ThemedText>
+              />
+            </View>
 
-              <ThemedText style={[styles.questionText, { color: isDark ? colors.primaryDark : colors.primaryLight }]}>
-                {questions[currentQuestionIndex]}
-              </ThemedText>
-
-              {currentQuestionIndex === 5 ? (
-                // Radio button options for last question
-                fitnessGoals.map((goal) => (
-                  <TouchableOpacity
-                    key={goal}
-                    style={styles.radioContainer}
-                    onPress={() => setSelectedGoal(goal)}
-                  >
-                    <View
-                      style={
-                        selectedGoal === goal
-                          ? styles.radioSelected
-                          : styles.radio
-                      }
-                    />
-                    <Text style={[styles.radioText, { color: isDark ? colors.primaryDark : colors.primaryLight }]}>{goal}</Text>
-                  </TouchableOpacity>
-                ))
-              ) : (
-                <TextInput
+            <PanGestureHandler
+              onGestureEvent={(event) => {
+                if (event.nativeEvent.translationX < -50) {
+                  handleNext();
+                  translateX.value = withSpring(-width, {}, () => {
+                    translateX.value = 0;
+                  });
+                }
+              }}
+            >
+              <Animated.View style={[styles.questionContainer, animatedStyle]}>
+                <ThemedText
+                  type="title"
                   style={[
-                    styles.input,
-                    {
-                      color: isDark ? colors.primaryDark : colors.primaryLight,
-                      borderColor: isDark ? colors.primaryDark : colors.primaryLight,
-                      backgroundColor: isDark ? '#333333' : '#ffffff',
-                    },
+                    styles.title,
+                    { color: isDark ? colors.primaryDark : colors.primaryLight },
                   ]}
-                  placeholder="Type your answer here..."
-                  value={input}
-                  onChangeText={setInput}
-                  keyboardType={
-                    numericQuestions.has(questions[currentQuestionIndex])
-                      ? "numeric"
-                      : "default"
-                  }
-                  placeholderTextColor={isDark ? "#cccccc" : "#8D99AE"}
-                />
-              )}
+                >
+                  Create Your Workout Plan
+                </ThemedText>
 
-              {errorMessage ? (
-                <Text style={styles.errorText}>{errorMessage}</Text>
-              ) : null}
+                <ThemedText style={[styles.questionText, { color: isDark ? colors.primaryDark : colors.primaryLight }]}>
+                  {questions[currentQuestionIndex]}
+                </ThemedText>
 
-              {loading ? (
-                <ActivityIndicator size="large" color={colors.accentLight} />
-              ) : (
-                <View style={styles.buttonContainer}>
-                  {/* Back button appears only after the first question */}
-                  {currentQuestionIndex > 0 ? (
+                {currentQuestionIndex === 5 ? (
+                  // Radio button options for last question
+                  fitnessGoals.map((goal) => (
                     <TouchableOpacity
-                      style={[styles.backButton, { backgroundColor: isDark ? colors.greyContainer : colors.secondary }]}
-                      onPress={handleBack}
+                      key={goal}
+                      style={styles.radioContainer}
+                      onPress={() => setSelectedGoal(goal)}
                     >
-                      <ThemedText style={styles.buttonText}>Back</ThemedText>
+                      <View
+                        style={
+                          selectedGoal === goal
+                            ? styles.radioSelected
+                            : styles.radio
+                        }
+                      />
+                      <Text style={[styles.radioText, { color: isDark ? colors.primaryDark : colors.primaryLight }]}>{goal}</Text>
                     </TouchableOpacity>
-                  ) : (
-                    <View style={{ width: "30%" }} /> // Empty space to keep "Next" aligned
-                  )}
+                  ))
+                ) : (
+                  <TextInput
+                    style={[
+                      styles.input,
+                      {
+                        color: isDark ? colors.primaryDark : colors.primaryLight,
+                        borderColor: isDark ? colors.primaryDark : colors.primaryLight,
+                        backgroundColor: isDark ? '#333333' : '#ffffff',
+                      },
+                    ]}
+                    placeholder="Type your answer here..."
+                    value={input}
+                    onChangeText={setInput}
+                    keyboardType={
+                      numericQuestions.has(questions[currentQuestionIndex])
+                        ? "numeric"
+                        : "default"
+                    }
+                    placeholderTextColor={isDark ? "#cccccc" : "#8D99AE"}
+                  />
+                )}
 
-                  {/* Next button always on the right */}
-                  <TouchableOpacity
-                    style={[styles.button, { backgroundColor: isDark ? colors.accentDark : colors.accentLight }]}
-                    onPress={handleNext}
-                  >
-                    <ThemedText style={styles.buttonText}>Next</ThemedText>
-                  </TouchableOpacity>
-                </View>
-              )}
+                {errorMessage ? (
+                  <Text style={styles.errorText}>{errorMessage}</Text>
+                ) : null}
 
-              <TouchableOpacity
-                style={[styles.cancelButton, { backgroundColor: isDark ? colors.secondary : "#8D99AE" }]}
-                onPress={() => navigation.goBack()}
-              >
-                <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
-              </TouchableOpacity>
-            </Animated.View>
-          </PanGestureHandler>
-        </>
-      )}
-    </GestureHandlerRootView>
+                {loading ? (
+                  <ActivityIndicator size="large" color={colors.accentLight} />
+                ) : (
+                  <View style={styles.buttonContainer}>
+                    {/* Back button appears only after the first question */}
+                    {currentQuestionIndex > 0 ? (
+                      <TouchableOpacity
+                        style={[styles.backButton, { backgroundColor: isDark ? colors.greyContainer : colors.secondary }]}
+                        onPress={handleBack}
+                      >
+                        <ThemedText style={styles.buttonText}>Back</ThemedText>
+                      </TouchableOpacity>
+                    ) : (
+                      <View style={{ width: "30%" }} /> // Empty space to keep "Next" aligned
+                    )}
+
+                    {/* Next button always on the right */}
+                    <TouchableOpacity
+                      style={[styles.button, { backgroundColor: isDark ? colors.accentDark : colors.accentLight }]}
+                      onPress={handleNext}
+                    >
+                      <ThemedText style={styles.buttonText}>Next</ThemedText>
+                    </TouchableOpacity>
+                  </View>
+                )}
+
+                <TouchableOpacity
+                  style={[styles.cancelButton, { backgroundColor: isDark ? colors.secondary : "#8D99AE" }]}
+                  onPress={() => navigation.goBack()}
+                >
+                  <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
+                </TouchableOpacity>
+              </Animated.View>
+            </PanGestureHandler>
+          </>
+        )}
+      </GestureHandlerRootView>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+  },
   // Add styles for radio buttons
   radioContainer: {
     flexDirection: "row",

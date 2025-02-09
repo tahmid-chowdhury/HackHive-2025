@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, ScrollView } from "react-native";
 import { HelloWave } from "@/components/HelloWave";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -35,50 +35,52 @@ export default function HomeScreen() {
         { backgroundColor: isDark ? colors.backgroundDark : colors.backgroundLight },
       ]}
     >
-      {/* Title and Greeting */}
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        {/* Title and Greeting */}
 
-      <ThemedText type="title" style={styles.sectionTitle}>
-      {greetingText}!
-      </ThemedText>
+        <ThemedText type="title" style={styles.sectionTitle}>
+        {greetingText}!
+        </ThemedText>
 
-      {/* Daily Goal Overview */}
-      <View style={[styles.metricSection, styles.greyContainer]}>
-        <ThemedText type="subtitle">Today's Goals</ThemedText>
-        <ThemedView style={styles.progressCircle}>
-          <ThemedText type="title" style={{ color: isDark ? colors.accentDark : colors.accentLight }}>
-            65%
-          </ThemedText>
-          <ThemedText>Complete</ThemedText>
-        </ThemedView>
-      </View>
-
-      {/* User's Current Stats */}
-      <View style={[styles.metricSection, { backgroundColor: isDark ? colors.accentDark : colors.accentLight }]}>
-        <ThemedText type="subtitle" style={{ color: "#ffffff" }}>Today's Stats</ThemedText>
-        <ThemedText style={{ color: "#ffffff" }}>Calorie Goal: 2000 cal</ThemedText>
-        <ThemedText style={{ color: "#ffffff" }}>Exercise Routine: 30-min HIIT</ThemedText>
-      </View>
-
-      {/* Weekly Summary */}
-      <View style={[styles.metricSection, styles.greyContainer]}>
-        <ThemedText type="subtitle">This Week</ThemedText>
-        <ThemedText>Workouts: 3/5</ThemedText>
-        <ThemedText>Calories: On Track</ThemedText>
-      </View>
-
-      {/* Recommendations */}
-      <ThemedText type="subtitle" style={styles.sectionTitle}>Recommendations</ThemedText>
-      <View style={styles.recommendationRow}>
-        <View style={[styles.recommendationContainer, styles.greyContainer]}>
-          <ThemedText type="subtitle">Next Workout</ThemedText>
-          <ThemedText>30-min HIIT Session</ThemedText>
+        {/* Daily Goal Overview */}
+        <View style={[styles.metricSection, styles.greyContainer]}>
+          <ThemedText type="subtitle">Today's Goals</ThemedText>
+          <ThemedView style={styles.progressCircle}>
+            <ThemedText type="title" style={{ color: isDark ? colors.accentDark : colors.accentLight }}>
+              65%
+            </ThemedText>
+            <ThemedText>Complete</ThemedText>
+          </ThemedView>
         </View>
 
-        <View style={[styles.recommendationContainer, styles.greyContainer]}>
-          <ThemedText type="subtitle">Next Meal</ThemedText>
-          <ThemedText>Grilled Chicken Salad</ThemedText>
+        {/* User's Current Stats */}
+        <View style={[styles.metricSection, { backgroundColor: isDark ? colors.accentDark : colors.accentLight }]}>
+          <ThemedText type="subtitle" style={{ color: "#ffffff" }}>Today's Stats</ThemedText>
+          <ThemedText style={{ color: "#ffffff" }}>Calorie Goal: 2000 cal</ThemedText>
+          <ThemedText style={{ color: "#ffffff" }}>Exercise Routine: 30-min HIIT</ThemedText>
         </View>
-      </View>
+
+        {/* Weekly Summary */}
+        <View style={[styles.metricSection, styles.greyContainer]}>
+          <ThemedText type="subtitle">This Week</ThemedText>
+          <ThemedText>Workouts: 3/5</ThemedText>
+          <ThemedText>Calories: On Track</ThemedText>
+        </View>
+
+        {/* Recommendations */}
+        <ThemedText type="subtitle" style={styles.sectionTitle}>Recommendations</ThemedText>
+        <View style={styles.recommendationRow}>
+          <View style={[styles.recommendationContainer, styles.greyContainer]}>
+            <ThemedText type="subtitle">Next Workout</ThemedText>
+            <ThemedText>30-min HIIT Session</ThemedText>
+          </View>
+
+          <View style={[styles.recommendationContainer, styles.greyContainer]}>
+            <ThemedText type="subtitle">Next Meal</ThemedText>
+            <ThemedText>Grilled Chicken Salad</ThemedText>
+          </View>
+        </View>
+      </ScrollView>
     </ThemedView>
   );
 }

@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import {
-  fetchMealSuggestion,
-  fetchSnackSuggestion,
-} from '@/components/GeminiAPI';
+import { fetchMealSuggestion, fetchSnackSuggestion } from '@/components/GeminiAPI';
 import { useNutrition } from '../context/NutritionContext';
 
 const ProgressBar = ({
@@ -98,93 +95,95 @@ export default function Metrics() {
         { backgroundColor: isDark ? '#2B2D42' : '#EDF2F4' },
       ]}
     >
-      <ThemedText type="title" style={styles.sectionTitle}>
-        Metrics
-      </ThemedText>
-
-      <View
-        style={[
-          styles.metricSection,
-          { backgroundColor: isDark ? '#D90429' : '#EF233C' },
-        ]}
-      >
-        <ThemedText type="subtitle">Total Calorie Progress</ThemedText>
-        <ProgressBar progress={calorieProgress} color={'#fff'} />
-        <ThemedText style={styles.detailText}>
-          {totalCalories || 0} / 2000 cal
-        </ThemedText>
-      </View>
-
-      <View style={[styles.metricSection, styles.greyContainer]}>
-        <ThemedText type="subtitle">Macro Breakdown</ThemedText>
-        <ThemedText>Protein</ThemedText>
-        <ProgressBar progress={proteinProgress} color={progressColor} />
-        <ThemedText style={styles.detailText}>
-          {protein || 0}g / 100g
+      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+        <ThemedText type="title" style={styles.sectionTitle}>
+          Metrics
         </ThemedText>
 
-        <ThemedText>Carbohydrates</ThemedText>
-        <ProgressBar progress={carbsProgress} color={progressColor} />
-        <ThemedText style={styles.detailText}>{carbs || 0}g / 250g</ThemedText>
-
-        <ThemedText>Fats</ThemedText>
-        <ProgressBar progress={fatsProgress} color={progressColor} />
-        <ThemedText style={styles.detailText}>{fats || 0}g / 70g</ThemedText>
-      </View>
-
-      <View style={[styles.metricSection, styles.greyContainer]}>
-        <ThemedText type="subtitle">Recommended Options</ThemedText>
-
-        <TouchableOpacity
-          style={styles.refreshButton}
-          onPress={fetchSuggestions}
+        <View
+          style={[
+            styles.metricSection,
+            { backgroundColor: isDark ? '#D90429' : '#EF233C' },
+          ]}
         >
-          <ThemedText style={styles.buttonText}>Refresh Suggestions</ThemedText>
-        </TouchableOpacity>
+          <ThemedText type="subtitle">Total Calorie Progress</ThemedText>
+          <ProgressBar progress={calorieProgress} color={'#fff'} />
+          <ThemedText style={styles.detailText}>
+            {totalCalories || 0} / 2000 cal
+          </ThemedText>
+        </View>
 
-        {suggestions.meals.map((meal, idx) => (
-          <View key={idx} style={styles.mealOption}>
-            <View style={styles.mealInfo}>
-              <ThemedText>{meal.name}</ThemedText>
-              <ThemedText style={styles.detailText}>
-                {meal.calories} cal | P: {meal.protein}g | C: {meal.carbs}g | F:{' '}
-                {meal.fats}g
-              </ThemedText>
-            </View>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => addMeal(meal)}
-            >
-              <ThemedText style={styles.buttonText}>Add</ThemedText>
-            </TouchableOpacity>
-          </View>
-        ))}
+        <View style={[styles.metricSection, styles.greyContainer]}>
+          <ThemedText type="subtitle">Macro Breakdown</ThemedText>
+          <ThemedText>Protein</ThemedText>
+          <ProgressBar progress={proteinProgress} color={progressColor} />
+          <ThemedText style={styles.detailText}>
+            {protein || 0}g / 100g
+          </ThemedText>
 
-        {suggestions.snack && (
-          <View style={styles.mealOption}>
-            <View style={styles.mealInfo}>
-              <ThemedText>Snack: {suggestions.snack.name}</ThemedText>
-              <ThemedText style={styles.detailText}>
-                {suggestions.snack.calories} cal | P:{' '}
-                {suggestions.snack.protein}g | C: {suggestions.snack.carbs}g |
-                F: {suggestions.snack.fats}g
-              </ThemedText>
+          <ThemedText>Carbohydrates</ThemedText>
+          <ProgressBar progress={carbsProgress} color={progressColor} />
+          <ThemedText style={styles.detailText}>{carbs || 0}g / 250g</ThemedText>
+
+          <ThemedText>Fats</ThemedText>
+          <ProgressBar progress={fatsProgress} color={progressColor} />
+          <ThemedText style={styles.detailText}>{fats || 0}g / 70g</ThemedText>
+        </View>
+
+        <View style={[styles.metricSection, styles.greyContainer]}>
+          <ThemedText type="subtitle">Recommended Options</ThemedText>
+
+          <TouchableOpacity
+            style={styles.refreshButton}
+            onPress={fetchSuggestions}
+          >
+            <ThemedText style={styles.buttonText}>Refresh Suggestions</ThemedText>
+          </TouchableOpacity>
+
+          {suggestions.meals.map((meal, idx) => (
+            <View key={idx} style={styles.mealOption}>
+              <View style={styles.mealInfo}>
+                <ThemedText>{meal.name}</ThemedText>
+                <ThemedText style={styles.detailText}>
+                  {meal.calories} cal | P: {meal.protein}g | C: {meal.carbs}g | F:{' '}
+                  {meal.fats}g
+                </ThemedText>
+              </View>
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={() => addMeal(meal)}
+              >
+                <ThemedText style={styles.buttonText}>Add</ThemedText>
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => addMeal(suggestions.snack)}
-            >
-              <ThemedText style={styles.buttonText}>Add</ThemedText>
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
+          ))}
+
+          {suggestions.snack && (
+            <View style={styles.mealOption}>
+              <View style={styles.mealInfo}>
+                <ThemedText>Snack: {suggestions.snack.name}</ThemedText>
+                <ThemedText style={styles.detailText}>
+                  {suggestions.snack.calories} cal | P:{' '}
+                  {suggestions.snack.protein}g | C: {suggestions.snack.carbs}g |
+                  F: {suggestions.snack.fats}g
+                </ThemedText>
+              </View>
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={() => addMeal(suggestions.snack)}
+              >
+                <ThemedText style={styles.buttonText}>Add</ThemedText>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      </ScrollView>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, justifyContent: 'center' },
+  container: { flex: 1, padding: 20 },
   sectionTitle: { marginBottom: 10, textAlign: 'center' },
   detailText: { marginTop: 5, fontSize: 14, textAlign: 'center' },
   progressBarContainer: {

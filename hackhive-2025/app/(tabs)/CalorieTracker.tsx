@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
+  ScrollView,
 } from 'react-native';
 import BarcodeScannerComponent from '@/components/ui/BarcodeScanner';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -40,14 +41,7 @@ const CalorieTrackerScreen = () => {
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: isDark ? '#2B2D42' : '#EDF2F4',
-        },
-      ]}
-    >
+    <ScrollView contentContainerStyle={styles.container}>
       {showScanner ? (
         <>
           <BarcodeScannerComponent onProductScanned={handleProductScanned} />
@@ -114,13 +108,13 @@ const CalorieTrackerScreen = () => {
           {showScanner ? 'Back to Calorie Tracker' : 'Open Barcode Scanner'}
         </Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
