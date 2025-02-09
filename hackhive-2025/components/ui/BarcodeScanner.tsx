@@ -12,6 +12,7 @@ interface Product {
   fat: number;
 }
 
+// scanner constants, used to help when defining functions, and to define what the scanner should capture
 const BarcodeScanner: React.FC = () => {
   const [permission, requestPermission] = useCameraPermissions();
   const [scanning, setScanning] = useState(false);
@@ -19,6 +20,7 @@ const BarcodeScanner: React.FC = () => {
   const scannedRef = useRef(false);
   const { addNutrition } = useNutrition();
 
+  // requests permission to access camera
   useEffect(() => {
     if (permission && !permission.granted) {
       requestPermission();
@@ -28,7 +30,7 @@ const BarcodeScanner: React.FC = () => {
   if (!permission) {
     return <View />;
   }
-
+  // cannot use scanner unless permission is granted
   if (!permission.granted) {
     return (
       <View style={styles.container}>
@@ -41,7 +43,7 @@ const BarcodeScanner: React.FC = () => {
       </View>
     );
   }
-
+  // logic to fetch data from an API, fetches based on the barcode scanned
   const handleBarcodeScanned = async ({
     type,
     data,
@@ -67,7 +69,7 @@ const BarcodeScanner: React.FC = () => {
       );
 
       const foodItem = response.data.foods[0];
-
+      // creates an instance of an empy product
       if (foodItem) {
         const product: Product = {
           name: foodItem.food_name || 'Unknown Product',
@@ -117,7 +119,7 @@ const BarcodeScanner: React.FC = () => {
       ]);
     }
   };
-
+  // UI for the barcode scanner
   return (
     <View style={styles.container}>
       <CameraView
@@ -148,7 +150,7 @@ const BarcodeScanner: React.FC = () => {
     </View>
   );
 };
-
+// styles used
 const styles = StyleSheet.create({
   container: {
     flex: 1,

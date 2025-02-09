@@ -11,6 +11,17 @@ import {
 import BarcodeScannerComponent from '@/components/ui/BarcodeScanner';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
+// Color theme used in all tabs
+const colors = {
+  backgroundLight: '#EDF2F4',
+  backgroundDark: '#2B2D42',
+  primaryLight: '#2B2D42',
+  primaryDark: '#EDF2F4',
+  accentLight: '#EF233C',
+  accentDark: '#D90429',
+  secondary: '#8D99AE',
+};
+// defines the values used in the metrics, here its being used for the user to see the macros of what they scan
 interface Product {
   name: string;
   calories: number;
@@ -18,7 +29,7 @@ interface Product {
   carbohydrates: number;
   fat: number;
 }
-
+// defining params for the scanner
 const CalorieTrackerScreen = () => {
   const [calories, setCalories] = useState('');
   const [totalCalories, setTotalCalories] = useState(0);
@@ -26,7 +37,7 @@ const CalorieTrackerScreen = () => {
   const [scannedItems, setScannedItems] = useState<Product[]>([]);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
-
+  // user allowed to manually add calories if they dont want to get the macros for it (quick add feature)
   const addCalories = () => {
     const calorieValue = parseInt(calories);
     if (!isNaN(calorieValue)) {
@@ -39,7 +50,7 @@ const CalorieTrackerScreen = () => {
     setScannedItems((prevItems) => [...prevItems, product]);
     setTotalCalories((prevTotal) => prevTotal + product.calories);
   };
-
+  // defines the UI for the Tab
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {showScanner ? (
@@ -50,8 +61,24 @@ const CalorieTrackerScreen = () => {
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
               <View style={styles.itemContainer}>
-                <Text style={styles.itemText}>{item.name}</Text>
-                <Text style={styles.itemText}>
+                <Text
+                  style={[
+                    styles.itemText,
+                    {
+                      color: isDark ? colors.primaryDark : colors.primaryLight,
+                    },
+                  ]}
+                >
+                  {item.name}
+                </Text>
+                <Text
+                  style={[
+                    styles.itemText,
+                    {
+                      color: isDark ? colors.primaryDark : colors.primaryLight,
+                    },
+                  ]}
+                >
                   {item.calories} kcal | P: {item.protein}g | C:{' '}
                   {item.carbohydrates}g | F: {item.fat}g
                 </Text>
@@ -62,7 +89,10 @@ const CalorieTrackerScreen = () => {
       ) : (
         <>
           <Text
-            style={[styles.title, { color: isDark ? '#EDF2F4' : '#2B2D42' }]}
+            style={[
+              styles.title,
+              { color: isDark ? colors.primaryDark : colors.primaryLight },
+            ]}
           >
             Calorie Tracker
           </Text>
@@ -70,8 +100,8 @@ const CalorieTrackerScreen = () => {
             style={[
               styles.input,
               {
-                color: isDark ? '#EDF2F4' : '#2B2D42',
-                borderColor: isDark ? '#EDF2F4' : '#2B2D42',
+                color: isDark ? colors.primaryDark : colors.primaryLight,
+                borderColor: isDark ? colors.primaryDark : colors.primaryLight,
                 backgroundColor: isDark ? '#333333' : '#ffffff',
               },
             ]}
@@ -84,14 +114,21 @@ const CalorieTrackerScreen = () => {
           <TouchableOpacity
             style={[
               styles.button,
-              { backgroundColor: isDark ? '#D90429' : '#EF233C' },
+              {
+                backgroundColor: isDark
+                  ? colors.accentDark
+                  : colors.accentLight,
+              },
             ]}
             onPress={addCalories}
           >
             <Text style={styles.buttonText}>Add Calories</Text>
           </TouchableOpacity>
           <Text
-            style={[styles.total, { color: isDark ? '#EDF2F4' : '#2B2D42' }]}
+            style={[
+              styles.total,
+              { color: isDark ? colors.primaryDark : colors.primaryLight },
+            ]}
           >
             Total Calories: {totalCalories}
           </Text>
@@ -100,7 +137,7 @@ const CalorieTrackerScreen = () => {
       <TouchableOpacity
         style={[
           styles.button,
-          { backgroundColor: isDark ? '#D90429' : '#EF233C' },
+          { backgroundColor: isDark ? colors.accentDark : colors.accentLight },
         ]}
         onPress={() => setShowScanner(!showScanner)}
       >
@@ -111,7 +148,7 @@ const CalorieTrackerScreen = () => {
     </ScrollView>
   );
 };
-
+// styles used
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
