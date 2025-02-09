@@ -93,19 +93,6 @@ export default function Workout() {
         <ThemedText style={styles.buttonText}>+ Add New Workout</ThemedText>
       </TouchableOpacity>
 
-      {/* 🔹 View Workout Results Button */}
-      <TouchableOpacity
-        style={[
-          styles.button,
-          { backgroundColor: isDark ? colors.accentDark : colors.accentLight },
-        ]}
-        onPress={() => navigation.navigate("WorkoutResults")}
-      >
-        <ThemedText style={styles.buttonText}>
-          📊 View Workout Results
-        </ThemedText>
-      </TouchableOpacity>
-
       <View style={styles.section}>
         <ThemedText
           style={[
