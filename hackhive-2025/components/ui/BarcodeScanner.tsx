@@ -79,10 +79,10 @@ const BarcodeScanner: React.FC = () => {
 
         // Add nutrition to the context
         addNutrition({
-          totalCalories: product.calories,
+          calories: product.calories,
           protein: product.protein,
-          carbs: product.carbohydrates,
-          fats: product.fat,
+          carbohydrates: product.carbohydrates,
+          fat: product.fat,
         });
 
         // Update local state to display scanned product info
