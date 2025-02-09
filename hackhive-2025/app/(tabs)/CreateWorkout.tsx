@@ -185,14 +185,19 @@ export default function Workout() {
                 <ActivityIndicator size="large" color={colors.accentLight} />
               ) : (
                 <View style={styles.buttonContainer}>
-                  {currentQuestionIndex > 0 && (
+                  {/* Back button appears only after the first question */}
+                  {currentQuestionIndex > 0 ? (
                     <TouchableOpacity
                       style={styles.backButton}
                       onPress={handleBack}
                     >
                       <ThemedText style={styles.buttonText}>Back</ThemedText>
                     </TouchableOpacity>
+                  ) : (
+                    <View style={{ width: "30%" }} /> // Empty space to keep "Next" aligned
                   )}
+
+                  {/* Next button always on the right */}
                   <TouchableOpacity style={styles.button} onPress={handleNext}>
                     <ThemedText style={styles.buttonText}>Next</ThemedText>
                   </TouchableOpacity>
@@ -243,11 +248,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   cancelButton: {
+    backgroundColor: "#8D99AE",
+    padding: 15,
+    borderRadius: 10,
     marginTop: 20,
     alignItems: "center",
   },
   cancelButtonText: {
-    color: "#8D99AE",
+    color: "#FFF",
     fontSize: 16,
     fontWeight: "bold",
   },
