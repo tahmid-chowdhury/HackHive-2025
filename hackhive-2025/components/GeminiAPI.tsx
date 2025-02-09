@@ -50,13 +50,13 @@ export async function fetchMealSuggestion(
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     const prompt = `Based on the following data:
-Total calorie progress: ${progressData.calorieProgress.toFixed(1)}%;
+Total calorie progress: ${progressData.totalCaloriesConsumed}/${progressData.totalCaloriesGoal};
 Protein: ${progressData.proteinConsumed}g/${progressData.proteinGoal}g;
 Carbohydrates: ${progressData.carbsConsumed}g/${progressData.carbsGoal}g;
 Fats: ${progressData.fatsConsumed}g/${progressData.fatsGoal}g;
-Please suggest one meal option at index ${mealIndex} with calorie count.
+Please suggest one meal option with calories and macro nutrients.
 Please do not give me any explanations, simply return a JSON in the format:
-{"meal": {"name": "MealName", "calories": 300}}`;
+{"meal": {"name": "MealName", "calories": 000, "protein": 00, "carbs": 00, "fats": 00}}`;
     const result = await model.generateContent(prompt);
     const responseText = await result.response.text();
     const parsed = JSON.parse(
@@ -70,7 +70,8 @@ Please do not give me any explanations, simply return a JSON in the format:
 }
 
 export async function fetchSnackSuggestion(progressData: {
-  calorieProgress: number;
+  totalCaloriesConsumed: number;
+  totalCaloriesGoal: number;
   proteinConsumed: number;
   proteinGoal: number;
   carbsConsumed: number;
@@ -82,13 +83,13 @@ export async function fetchSnackSuggestion(progressData: {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     const prompt = `Based on the following data:
-Total calorie progress: ${progressData.calorieProgress.toFixed(1)}%;
+Total calorie progress: ${progressData.totalCaloriesConsumed}/${progressData.totalCaloriesGoal};
 Protein: ${progressData.proteinConsumed}g/${progressData.proteinGoal}g;
 Carbohydrates: ${progressData.carbsConsumed}g/${progressData.carbsGoal}g;
 Fats: ${progressData.fatsConsumed}g/${progressData.fatsGoal}g;
-Please suggest one snack option with calorie count.
+Please suggest one snack option with calories and macro nutrients.
 Please do not give me any explanations, simply return a JSON in the format:
-{"snack": {"name": "SnackName", "calories": 150}}`;
+{"snack": {"name": "SnackName", "calories": 000, "protein": 00, "carbs": 00, "fats": 00}}`;
     const result = await model.generateContent(prompt);
     const responseText = await result.response.text();
     const parsed = JSON.parse(
