@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   Dimensions,
   Text,
+  ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { useNavigation } from "@react-navigation/native";
@@ -19,6 +21,8 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from "react-native-reanimated";
+
+import { fetchWorkoutRoutine } from "@/components/GeminiAPI"; // Import function
 
 const { width } = Dimensions.get("window");
 
@@ -50,9 +54,12 @@ export default function Workout() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [input, setInput] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [workoutRoutine, setWorkoutRoutine] = useState(null);
+  const [loading, setLoading] = useState(false);
+
   const translateX = useSharedValue(0);
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (input.trim() === "") {
       setErrorMessage("Please enter a value");
       return;
@@ -63,7 +70,10 @@ export default function Workout() {
       return;
     }
 
-    setResponses({ ...responses, [questions[currentQuestionIndex]]: input });
+    setResponses((prev) => ({
+      ...prev,
+      [questions[currentQuestionIndex]]: input,
+    }));
     setInput("");
     setErrorMessage("");
 
@@ -71,7 +81,16 @@ export default function Workout() {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
       console.log("Final Responses: ", responses);
-      navigation.goBack();
+      setLoading(true); // Show loading indicator
+      try {
+        const routine = await fetchWorkoutRoutine(responses);
+        setWorkoutRoutine(routine); // Save routine to state
+      } catch (error) {
+        console.error("Error fetching workout routine:", error);
+        setErrorMessage("Failed to generate workout routine. Try again.");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -90,80 +109,106 @@ export default function Workout() {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <View style={styles.progressBarContainer}>
-        <View
-          style={[
-            styles.progressBar,
-            {
-              width: `${
-                ((currentQuestionIndex + 1) / questions.length) * 100
-              }%`,
-            },
-          ]}
-        />
-      </View>
-
-      <PanGestureHandler
-        onGestureEvent={(event) => {
-          if (event.nativeEvent.translationX < -50) {
-            handleNext();
-            translateX.value = withSpring(-width, {}, () => {
-              translateX.value = 0;
-            });
-          }
-        }}
-      >
-        <Animated.View style={[styles.questionContainer, animatedStyle]}>
-          <ThemedText
-            type="title"
-            style={[
-              styles.title,
-              { color: isDark ? colors.primaryDark : colors.primaryLight },
-            ]}
-          >
-            Create Your Workout Plan
+      {workoutRoutine ? (
+        <ScrollView style={styles.resultsContainer}>
+          <ThemedText type="title" style={styles.title}>
+            Your Personalized Workout
           </ThemedText>
-
-          <ThemedText style={styles.questionText}>
-            {questions[currentQuestionIndex]}
-          </ThemedText>
-
-          <TextInput
-            style={styles.input}
-            placeholder="Type your answer here..."
-            value={input}
-            onChangeText={setInput}
-            keyboardType={
-              numericQuestions.has(questions[currentQuestionIndex])
-                ? "numeric"
-                : "default"
-            }
-            placeholderTextColor="#8D99AE"
-          />
-
-          {errorMessage ? (
-            <Text style={styles.errorText}>{errorMessage}</Text>
-          ) : null}
-
-          <View style={styles.buttonContainer}>
-            {currentQuestionIndex > 0 && (
-              <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-                <ThemedText style={styles.buttonText}>Back</ThemedText>
-              </TouchableOpacity>
-            )}
-            <TouchableOpacity style={styles.button} onPress={handleNext}>
-              <ThemedText style={styles.buttonText}>Next</ThemedText>
-            </TouchableOpacity>
+          {workoutRoutine.routine.map((exercise, index) => (
+            <View key={index} style={styles.exerciseContainer}>
+              <Text style={styles.exerciseName}>{exercise.exercise}</Text>
+              <Text style={styles.setsReps}>
+                {exercise.sets} Sets × {exercise.reps} Reps
+              </Text>
+            </View>
+          ))}
+        </ScrollView>
+      ) : (
+        <>
+          {/* Progress Bar */}
+          <View style={styles.progressBarContainer}>
+            <View
+              style={[
+                styles.progressBar,
+                {
+                  width: `${
+                    ((currentQuestionIndex + 1) / questions.length) * 100
+                  }%`,
+                },
+              ]}
+            />
           </View>
 
-          <TouchableOpacity
-            style={styles.cancelButton}
-            onPress={() => navigation.goBack()}
+          <PanGestureHandler
+            onGestureEvent={(event) => {
+              if (event.nativeEvent.translationX < -50) {
+                handleNext();
+                translateX.value = withSpring(-width, {}, () => {
+                  translateX.value = 0;
+                });
+              }
+            }}
           >
-            <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
-          </TouchableOpacity>
-        </Animated.View>
-      </PanGestureHandler>
+            <Animated.View style={[styles.questionContainer, animatedStyle]}>
+              <ThemedText
+                type="title"
+                style={[
+                  styles.title,
+                  { color: isDark ? colors.primaryDark : colors.primaryLight },
+                ]}
+              >
+                Create Your Workout Plan
+              </ThemedText>
+
+              <ThemedText style={styles.questionText}>
+                {questions[currentQuestionIndex]}
+              </ThemedText>
+
+              <TextInput
+                style={styles.input}
+                placeholder="Type your answer here..."
+                value={input}
+                onChangeText={setInput}
+                keyboardType={
+                  numericQuestions.has(questions[currentQuestionIndex])
+                    ? "numeric"
+                    : "default"
+                }
+                placeholderTextColor="#8D99AE"
+              />
+
+              {errorMessage ? (
+                <Text style={styles.errorText}>{errorMessage}</Text>
+              ) : null}
+
+              {loading ? (
+                <ActivityIndicator size="large" color={colors.accentLight} />
+              ) : (
+                <View style={styles.buttonContainer}>
+                  {currentQuestionIndex > 0 && (
+                    <TouchableOpacity
+                      style={styles.backButton}
+                      onPress={handleBack}
+                    >
+                      <ThemedText style={styles.buttonText}>Back</ThemedText>
+                    </TouchableOpacity>
+                  )}
+                  <TouchableOpacity style={styles.button} onPress={handleNext}>
+                    <ThemedText style={styles.buttonText}>Next</ThemedText>
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => navigation.goBack()}
+              >
+                <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
+              </TouchableOpacity>
+            </Animated.View>
+          </PanGestureHandler>
+        </>
+      )}
     </GestureHandlerRootView>
   );
 }
@@ -174,6 +219,26 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
+  },
+  resultsContainer: {
+    flex: 1,
+    width: "100%",
+    padding: 20,
+  },
+  exerciseContainer: {
+    backgroundColor: "#8D99AE",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  exerciseName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#FFF",
+  },
+  setsReps: {
+    fontSize: 16,
+    color: "#EDF2F4",
   },
   progressBarContainer: {
     width: "100%",
@@ -213,41 +278,5 @@ const styles = StyleSheet.create({
     width: "80%",
     textAlign: "center",
     marginBottom: 15,
-  },
-  errorText: {
-    color: "red",
-    fontSize: 14,
-    marginBottom: 10,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "80%",
-  },
-  button: {
-    backgroundColor: "#EF233C",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  backButton: {
-    backgroundColor: "#8D99AE",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#FFF",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  cancelButton: {
-    marginTop: 20,
-    alignItems: "center",
-  },
-  cancelButtonText: {
-    color: "#8D99AE",
-    fontSize: 16,
-    fontWeight: "bold",
   },
 });

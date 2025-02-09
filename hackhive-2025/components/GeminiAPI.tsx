@@ -34,15 +34,18 @@ export default function GeminiAPI() {
 
 // Remove or replace the original fetchMealSuggestions function
 
-export async function fetchMealSuggestion(progressData: {
-  calorieProgress: number;
-  proteinConsumed: number;
-  proteinGoal: number;
-  carbsConsumed: number;
-  carbsGoal: number;
-  fatsConsumed: number;
-  fatsGoal: number;
-}, mealIndex: number) {
+export async function fetchMealSuggestion(
+  progressData: {
+    calorieProgress: number;
+    proteinConsumed: number;
+    proteinGoal: number;
+    carbsConsumed: number;
+    carbsGoal: number;
+    fatsConsumed: number;
+    fatsGoal: number;
+  },
+  mealIndex: number
+) {
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
@@ -56,7 +59,9 @@ Please do not give me any explanations, simply return a JSON in the format:
 {"meal": {"name": "MealName", "calories": 300}}`;
     const result = await model.generateContent(prompt);
     const responseText = await result.response.text();
-    const parsed = JSON.parse(responseText.replace(/```json\n?|```/g, "").trim());
+    const parsed = JSON.parse(
+      responseText.replace(/```json\n?|```/g, "").trim()
+    );
     return parsed?.meal || null;
   } catch (error) {
     console.error("fetchMealSuggestion error:", error);
@@ -86,10 +91,49 @@ Please do not give me any explanations, simply return a JSON in the format:
 {"snack": {"name": "SnackName", "calories": 150}}`;
     const result = await model.generateContent(prompt);
     const responseText = await result.response.text();
-    const parsed = JSON.parse(responseText.replace(/```json\n?|```/g, "").trim());
+    const parsed = JSON.parse(
+      responseText.replace(/```json\n?|```/g, "").trim()
+    );
     return parsed?.snack || null;
   } catch (error) {
     console.error("fetchSnackSuggestion error:", error);
+    return null;
+  }
+}
+
+export async function fetchWorkoutRoutine(userData) {
+  try {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+    // Construct a prompt using user responses
+    const prompt = `Based on the following user details, generate a personalized workout routine:
+    Age: ${userData.age} years old
+    Height: ${userData.height} cm
+    Weight: ${userData.weight} kg
+    Workout Frequency: ${userData.workoutDays} days per week
+    Preferred Workout Duration: ${userData.duration} minutes
+    Provide a structured workout plan with exercises, sets, and reps.
+    Return a JSON response in the format:
+    {
+      "workout": {
+        "routine": [
+          {"exercise": "Exercise Name", "sets": 3, "reps": 12},
+          {"exercise": "Exercise Name", "sets": 3, "reps": 10}
+        ]
+      }
+    }`;
+
+    const result = await model.generateContent(prompt);
+    const responseText = await result.response.text();
+
+    // Parse JSON output from Gemini
+    const parsed = JSON.parse(
+      responseText.replace(/```json\n?|```/g, "").trim()
+    );
+    return parsed?.workout || null;
+  } catch (error) {
+    console.error("fetchWorkoutRoutine error:", error);
     return null;
   }
 }
