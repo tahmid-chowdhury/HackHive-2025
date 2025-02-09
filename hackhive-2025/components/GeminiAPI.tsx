@@ -104,15 +104,15 @@ Please do not give me any explanations, simply return a JSON in the format:
 }
 
 export async function fetchWorkoutRoutine(userData: {
-    age: number;
-    height: number;
-    weight: number;
-    workoutDays: number;
-    duration: number;
-    carbsGoal: number;
-    fatsConsumed: number;
-    fatsGoal: number;
-  }) {
+  age: number;
+  height: number;
+  weight: number;
+  workoutDays: number;
+  duration: number;
+  carbsGoal: number;
+  fatsConsumed: number;
+  fatsGoal: number;
+}) {
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
@@ -124,7 +124,7 @@ export async function fetchWorkoutRoutine(userData: {
     Weight: ${userData.weight} kg
     Workout Frequency: ${userData.workoutDays} days per week
     Preferred Workout Duration: ${userData.duration} minutes
-    Provide a structured workout plan with exercises, sets, and reps.
+    Provide a structured workout plan with exercises, sets, and reps unless of course the exercise does not require either sets or reps.
     Please do not give me any explanations, simply return a JSON in the format:
     {
       "workout": {
