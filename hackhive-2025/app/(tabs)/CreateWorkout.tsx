@@ -41,7 +41,7 @@ const questions = [
   "What is your weight (kg)?",
   "How many days per week do you want to work out?",
   "What is your preferred workout duration (Minutes)?",
-  "What is your fitness goal?", // New final question with radio buttons
+  "What is your fitness goal?",
 ];
 
 const numericQuestions = new Set(questions.slice(0, 5)); // First 5 questions require numeric input
@@ -131,6 +131,16 @@ export default function Workout() {
               </Text>
             </View>
           ))}
+          <TouchableOpacity
+            style={styles.hubButton}
+            onPress={() =>
+              navigation.reset({ index: 0, routes: [{ name: "Workout" }] })
+            }
+          >
+            <ThemedText style={styles.buttonText}>
+              🏠 Back to Workout Hub
+            </ThemedText>
+          </TouchableOpacity>
         </ScrollView>
       ) : (
         <>
@@ -311,6 +321,12 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  hubButton: {
+    backgroundColor: "#EF233C",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
   },
   resultsContainer: {
     flex: 1,
