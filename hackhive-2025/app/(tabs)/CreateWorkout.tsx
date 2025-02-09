@@ -220,6 +220,37 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "80%",
+  },
+  button: {
+    backgroundColor: "#EF233C",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  backButton: {
+    backgroundColor: "#8D99AE",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#FFF",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  cancelButton: {
+    marginTop: 20,
+    alignItems: "center",
+  },
+  cancelButtonText: {
+    color: "#8D99AE",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
   resultsContainer: {
     flex: 1,
     width: "100%",
