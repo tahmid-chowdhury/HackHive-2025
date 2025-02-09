@@ -36,14 +36,23 @@ export default function HomeScreen() {
       ]}
     >
       {/* Title and Greeting */}
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText
-          type="title"
-          style={{ color: isDark ? colors.primaryDark : colors.primaryLight }}
-        >
-          {greetingText}!
+
+      <ThemedText type="title" style={styles.sectionTitle}>
+      {greetingText}!
+      </ThemedText>
+
+      {/* Daily Goal Overview */}
+      <ThemedView style={[styles.goalOverview, styles.statsContainer,
+          { backgroundColor: isDark ? colors.secondary : "#ffffff"}]}>
+        <ThemedText type="subtitle" style={{ color: isDark ? colors.primaryDark : colors.primaryLight }}>
+          Today's Goals
         </ThemedText>
-        <HelloWave />
+        <ThemedView style={styles.progressCircle}>
+          <ThemedText type="title" style={{ color: isDark ? colors.accentDark : colors.accentLight }}>
+            65%
+          </ThemedText>
+          <ThemedText>Complete</ThemedText>
+        </ThemedView>
       </ThemedView>
 
       {/* User's Current Stats */}
@@ -53,59 +62,52 @@ export default function HomeScreen() {
           { backgroundColor: isDark ? colors.accentDark : colors.accentLight },
         ]}
       >
-        <ThemedText type="title" style={{ color: "#EDF2F4" }}>
+        <ThemedText type="subtitle" style={{ color: "#ffffff" }}>
           Today's Stats
         </ThemedText>
-        <ThemedText style={{ color: "#EDF2F4" }}>
+        <ThemedText style={{ color: "#ffffff" }}>
           Calorie Goal: 2000 kcal
         </ThemedText>
-        <ThemedText style={{ color: "#EDF2F4" }}>
+        <ThemedText style={{ color: "#ffffff" }}>
           Exercise Routine: 30-min HIIT
         </ThemedText>
-        <ThemedText style={{ color: "#EDF2F4" }}>
+        <ThemedText style={{ color: "#ffffff" }}>
           Step Goal: 10000 steps
         </ThemedText>
       </ThemedView>
 
+      {/* Weekly Summary */}
+      <ThemedView style={styles.weeklySummary}>
+        <ThemedText type="subtitle" style={{ color: isDark ? colors.primaryDark : colors.primaryLight }}>
+          This Week
+        </ThemedText>
+        <ThemedView style={styles.weeklyStats}>
+          <ThemedText>Workouts: 3/5</ThemedText>
+          <ThemedText>Calories: On Track</ThemedText>
+          <ThemedText>Steps: 45,230</ThemedText>
+        </ThemedView>
+      </ThemedView>
+
       {/* Recommendation Row */}
+      <ThemedText type="subtitle" style={[styles.sectionTitle, { color: isDark ? colors.primaryDark : colors.primaryLight }]}>
+        Recommendations
+      </ThemedText>
       <ThemedView style={styles.recommendationRow}>
-        {/* Next Recommended Workout */}
-        <ThemedView
-          style={[
-            styles.recommendationContainer,
-            { backgroundColor: colors.secondary, borderColor: colors.accentDark },
-          ]}
-        >
-          <ThemedText
-            type="subtitle"
-            style={{ color: isDark ? colors.primaryDark : colors.primaryLight }}
-          >
-            Next Recommended Workout
+        <ThemedView style={[styles.recommendationContainer, { backgroundColor: isDark ? colors.secondary : "#ffffff" }]}>
+          <ThemedText type="subtitle" style={{ color: isDark ? colors.primaryDark : colors.primaryLight }}>
+            Next Workout
           </ThemedText>
-          <ThemedText
-            style={{ color: isDark ? colors.primaryDark : colors.primaryLight }}
-          >
-            30-min HIIT Session (Full Body)
+          <ThemedText style={{ color: isDark ? colors.primaryDark : colors.primaryLight }}>
+            30-min HIIT Session
           </ThemedText>
         </ThemedView>
 
-        {/* Next Recommended Meal */}
-        <ThemedView
-          style={[
-            styles.recommendationContainer,
-            { backgroundColor: colors.secondary, borderColor: colors.accentDark },
-          ]}
-        >
-          <ThemedText
-            type="subtitle"
-            style={{ color: isDark ? colors.primaryDark : colors.primaryLight }}
-          >
-            Next Recommended Meal
+        <ThemedView style={[styles.recommendationContainer, { backgroundColor: isDark ? colors.secondary : "#ffffff" }]}>
+          <ThemedText type="subtitle" style={{ color: isDark ? colors.primaryDark : colors.primaryLight }}>
+            Next Meal
           </ThemedText>
-          <ThemedText
-            style={{ color: isDark ? colors.primaryDark : colors.primaryLight }}
-          >
-            Grilled Chicken Salad with Quinoa
+          <ThemedText style={{ color: isDark ? colors.primaryDark : colors.primaryLight }}>
+            Grilled Chicken Salad
           </ThemedText>
         </ThemedView>
       </ThemedView>
@@ -136,9 +138,43 @@ const styles = StyleSheet.create({
   },
   recommendationContainer: {
     flex: 1,
-    padding: 20,
-    borderTopWidth: 1,
-    marginHorizontal: 8, // increased horizontal spacing
-    borderRadius: 10,    // rounded corners
+    padding: 15,
+    marginHorizontal: 5,
+    borderRadius: 10,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  greeting: {
+    fontSize: 32,
+    fontWeight: "bold",
+  },
+  goalOverview: {
+    alignItems: "center",
+    marginVertical: 20,
+  },
+  progressCircle: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 3,
+    borderColor: "#EF233C",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  weeklySummary: {
+    marginVertical: 20,
+  },
+  weeklyStats: {
+    marginTop: 10,
+    padding: 15,
+    backgroundColor: "#8D99AE",
+    borderRadius: 10,
+  },
+  sectionTitle: {
+    marginBottom: 10,
   },
 });
